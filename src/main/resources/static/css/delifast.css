@@ -1,0 +1,337 @@
+
+/* ===== GLOBAL ===== */
+
+/* Variables */
+:root {
+    --accent: #ff2b6a;
+    --accent-600: #e02159;
+    --text-muted: #6c757d;
+}
+
+/* Navbar */
+.navbar .navbar-brand.brand-accent {
+    color: var(--accent) !important;
+    letter-spacing: .5px;
+}
+
+/* ESTADO NORMAL */
+.navbar .nav-link {
+    color: #555;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 6px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* HOVER (solo color, NO subrayado) */
+.navbar .nav-link:hover:not(.active) {
+    color: #ff2b6a;
+}
+
+/* PÁGINA ACTIVA */
+.navbar .nav-link.active {
+    color: #ff2b6a !important;
+    border-bottom-color: #ff2b6a;
+    font-weight: 600;
+}
+
+/* Botón principal */
+.btn-accent {
+    background: var(--accent);
+    color: #fff !important;
+    border: none;
+    border-radius: 999px;
+    padding: .45rem 1rem;
+    transition: .15s ease;
+}
+
+.btn-accent:hover {
+    background: var(--accent-600);
+}
+
+/* Título con acento */
+.brand-title {
+    color: var(--accent);
+}
+
+/* Footer */
+.delifast-footer {
+    background: linear-gradient(90deg, #5b1d95, #8a1ed1);
+}
+
+.footer-link {
+    color: #ffffffcc !important;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: #fff !important;
+    text-decoration: underline;
+}
+
+/* ===== HOME ===== */
+
+/* Sección hero */
+.home-hero {
+    position: relative;
+    padding: 4rem 0;
+    background: #fff;
+    overflow: hidden;
+}
+
+/* Fondo decorativo */
+.home-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("../img/home-portada.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: .08;
+    pointer-events: none;
+}
+
+/* Elevar contenido */
+.home-hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Imagen principal */
+.home-hero__image {
+    max-height: 420px;
+    object-fit: contain;
+}
+
+/* Texto destacado */
+.emoji-text {
+    font-weight: 600;
+}
+
+/* ===== ACERCA DE NOSOTROS ===== */
+
+.acercadenosotros-section {
+    padding: 4rem 0;
+}
+
+/* Video */
+.video-nosotros {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+/* Cards de servicios */
+.servicio-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    padding: 1.25rem;
+    text-align: center;
+    border: 1px solid #eee;
+}
+
+.servicio-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: .35rem;
+}
+
+.servicio-card p {
+    color: #666;
+    margin: 0;
+}
+
+/* Ícono circular */
+.icon-circle {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto .75rem;
+    border-radius: 50%;
+    background: #ffe3ed;
+    color: #ff2b6a;
+    display: grid;
+    place-items: center;
+    font-size: 1.4rem;
+}
+
+/* ===== ESPECIALIDADES ===== */
+
+.especialidades-section {
+    padding-top: 6rem;
+     
+    padding-bottom: 4rem;
+.esp-card {
+    background: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Imagen */
+.esp-img-wrap {
+    width: 100%;
+    height: 160px;
+    background: #f5f6f7;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.esp-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+/* Contenido */
+.esp-content img.esp-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+/* ===== POPULARES ===== */
+
+.pop-card {
+    background: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.pop-img-wrap {
+    width: 100%;
+    height: 160px;
+    background: #f5f6f7;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.pop-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 575.98px) {
+    .esp-img-wrap,
+    .pop-img-wrap {
+        height: 140px;
+    }
+}
+
+/* ===== MENÚ ===== */
+
+/* Sección menú */
+.menu {
+    background: #fff;
+}
+
+/* Imagen de producto en cards */
+.menu-card-image {
+    height: 250px;
+    object-fit: cover;
+}
+
+/* Badge de precio (opcional, reemplaza inline-style) */
+.menu-price-badge {
+    background-color: #e83e8c;
+ 
+ 
+ 
+
+/* ===== SECCIÓN CONTACTO ===== */
+/* ===== CONTACTO ===== */
+
+.contacto {
+    padding: 8rem 0 2rem;
+    min-height: 100vh;
+    background: #f5f5f5;
+}
+
+.contacto .card {
+    width: 100%;
+}
+
+.input-group-text {
+    background: #fff;
+    border-right: 0;
+    border-radius: 999px 0 0 999px;
+}
+
+.input-group .form-control {
+    border-left: 0;
+    border-radius: 0 999px 999px 0;
+}
+
+textarea.form-control {
+    border-radius: 16px;
+}
+
+.text-accent {
+    color: #e83e8c;
+}
+
+/* Contenedor lateral del inventario */
+.inventory-sidebar {
+    background-color: #eef6fb;   /* celeste claro */
+}
+
+/* Cards internos */
+.inventory-sidebar .card {
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* Botones con ancho completo */
+.inventory-sidebar .btn {
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Efecto hover suave */
+.inventory-sidebar .card:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+
+.menu-img {
+    width: 100%;
+    height: 150px;         /* 🔹 tamaño uniforme como tu referencia */
+    object-fit: contain;   /* 🔹 no deforma */
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px;
+}
+.thumb-wrapper {
+    height: 160px;              /* controla el tamaño */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 12px;
+    background-color: #fafafa;
+}
+
+.thumb-wrapper img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;        /* no deforma */
+    display: block;
+}
+
+
+.gracias-card {
+    background-color: #f1f8ff;   /* celeste claro */
+    border: 1px solid #d6e9f8;
+    border-radius: 10px;
+    padding: 30px 35px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}

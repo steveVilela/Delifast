@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Jalamos de forma limpia el layout unificado del HEAD con los CDNs y estilos -->
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+</head>
+<body>
+
+    <!-- Insertamos de forma dinámica el Navbar con control de sesión activo -->
+    <div th:replace="~{layout/plantilla :: nav_bar}"></div>
+
+    <section class="menu py-5" id="menu">
+        <div class="container">
+
+            <div class="text-center mb-5">
+                <h1 class="fw-bold display-6" style="color:#e83e8c;">Nuestro Menú</h1>
+                <p class="text-muted mb-0">
+                    Descubre nuestros platos principales, postres y bebidas favoritas.
+                </p>
+            </div>
+
+            <!-- TABS DE NAVEGACIÓN DE STRAP (Estáticos para filtrado en UI) -->
+            <ul class="nav nav-pills justify-content-center gap-2 mb-5" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#todos">Todos</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#platos">Platos Principales</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#postres">Postres</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#bebidas">Bebidas</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+
+                <!------------------ PESTAÑA: TODOS ------------------>
+                <div class="tab-pane fade show active" id="todos">
+                    <div class="row g-4">
+                        <!-- Iteramos de forma directa la colección inyectada por el controlador -->
+                        <div th:each="p : ${productos}" class="col-sm-6 col-lg-4">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 text-center position-relative">
+                                
+                                <!-- BADGE DE PRECIO (Thymeleaf maneja el formato de decimales automáticamente) -->
+                                <span class="price-badge" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
+
+                                <!-- IMAGEN -->
+                                <div class="thumb-wrapper">
+                                    <img th:src="@{'/uploads/productos/' + ${p.imagen}}" th:alt="${p.nombre}">
+                                </div>
+
+                                <!-- CONTENIDO -->
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-1" th:text="${p.nombre}"></h6>
+                                    <p class="small text-muted mb-2" th:text="'Stock: ' + ${p.stock}"></p>
+
+                                    <!-- VALIDACIÓN DE COMPRA EN BASE A DISPONIBILIDAD -->
+                                    <form th:if="${p.stock > 0}" method="post" th:action="@{/carrito/agregar}">
+                                        <input type="hidden" name="productoId" th:value="${p.productoId}">
+                                        <input type="hidden" name="cantidad" value="1">
+                                        <button type="submit" class="btn btn-primary w-100">🛒 Ordenar ahora</button>
+                                    </form>
+                                    
+                                    <span th:unless="${p.stock > 0}" class="badge bg-danger">Agotado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!------------------ PESTAÑA: PLATOS PRINCIPALES (id_cat = 3) ------------------>
+                <div class="tab-pane fade" id="platos">
+                    <div class="row g-4">
+                        <div th:each="p : ${productos}" th:if="${p.categoriaId == 3}" class="col-sm-6 col-lg-4">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 text-center position-relative">
+                                <span class="price-badge" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
+                                <div class="thumb-wrapper">
+                                    <img th:src="@{'/uploads/productos/' + ${p.imagen}}" th:alt="${p.nombre}">
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-1" th:text="${p.nombre}"></h6>
+                                    <p class="small text-muted mb-2" th:text="'Stock: ' + ${p.stock}"></p>
+                                    <form th:if="${p.stock > 0}" method="post" th:action="@{/carrito/agregar}">
+                                        <input type="hidden" name="productoId" th:value="${p.productoId}">
+                                        <input type="hidden" name="cantidad" value="1">
+                                        <button type="submit" class="btn btn-primary w-100">🛒 Ordenar ahora</button>
+                                    </form>
+                                    <span th:unless="${p.stock > 0}" class="badge bg-danger">Agotado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!------------------ PESTAÑA: POSTRES (id_cat = 2) ------------------>
+                <div class="tab-pane fade" id="postres">
+                    <div class="row g-4">
+                        <div th:each="p : ${productos}" th:if="${p.categoriaId == 2}" class="col-sm-6 col-lg-4">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 text-center position-relative">
+                                <span class="price-badge" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
+                                <div class="thumb-wrapper">
+                                    <img th:src="@{'/uploads/productos/' + ${p.imagen}}" th:alt="${p.nombre}">
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-1" th:text="${p.nombre}"></h6>
+                                    <p class="small text-muted mb-2" th:text="'Stock: ' + ${p.stock}"></p>
+                                    <form th:if="${p.stock > 0}" method="post" th:action="@{/carrito/agregar}">
+                                        <input type="hidden" name="productoId" th:value="${p.productoId}">
+                                        <input type="hidden" name="cantidad" value="1">
+                                        <button type="submit" class="btn btn-primary w-100">🛒 Ordenar ahora</button>
+                                    </form>
+                                    <span th:unless="${p.stock > 0}" class="badge bg-danger">Agotado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!------------------ PESTAÑA: BEBIDAS (id_cat = 1) ------------------>
+                <div class="tab-pane fade" id="bebidas">
+                    <div class="row g-4">
+                        <div th:each="p : ${productos}" th:if="${p.categoriaId == 1}" class="col-sm-6 col-lg-4">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 text-center position-relative">
+                                <span class="price-badge" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
+                                <div class="thumb-wrapper">
+                                    <img th:src="@{'/uploads/productos/' + ${p.imagen}}" th:alt="${p.nombre}">
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-1" th:text="${p.nombre}"></h6>
+                                    <p class="small text-muted mb-2" th:text="'Stock: ' + ${p.stock}"></p>
+                                    <form th:if="${p.stock > 0}" method="post" th:action="@{/carrito/agregar}">
+                                        <input type="hidden" name="productoId" th:value="${p.productoId}">
+                                        <input type="hidden" name="cantidad" value="1">
+                                        <button type="submit" class="btn btn-primary w-100">🛒 Ordenar ahora</button>
+                                    </form>
+                                    <span th:unless="${p.stock > 0}" class="badge bg-danger">Agotado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Insertamos de forma dinámica el pie de página común con scripts y SweetAlerts -->
+    <div th:replace="~{layout/plantilla :: footer_layout}"></div>
+
+    <!-- Estilos locales integrados de forma limpia -->
+    <style>
+        .thumb-wrapper {
+            position: relative;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 12px;
+            background-color: #fafafa;
+        }
+
+        .thumb-wrapper img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .price-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #e91e63;
+            color: #fff;
+            padding: 4px 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+            z-index: 2;
+        }
+    </style>
+
+</body>
+</html>

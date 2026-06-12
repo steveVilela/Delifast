@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{layout/plantilla :: nav_bar}"></div>
+
+    <div class="container-fluid my-4">
+        <div class="row">
+            
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        
+                        <h4 class="fw-bold text-success mb-4" 
+                            th:text="${producto.productoId > 0} ? 'Editar Producto' : 'Nuevo Producto'">
+                            Nuevo Producto
+                        </h4>
+
+                        <form th:action="@{/administrador/productos/guardar}" 
+                              th:object="${producto}" 
+                              method="post" 
+                              enctype="multipart/form-data">
+                            
+                            <input type="hidden" th:field="*{productoId}" />
+                            
+                            <input type="hidden" name="imagenActual" th:value="*{imagen}" />
+
+							<div class="mb-3">
+							    <label class="form-label fw-bold">Categoría</label>
+							    <select th:field="*{categoriaId}" class="form-select" required>
+							        <option value="0">Seleccione...</option>
+							        
+							        <option th:each="cat : ${categorias}" 
+							                th:value="${cat.categoriaId}" 
+							                th:text="${cat.nombre}">
+							        </option>
+							    </select>
+							</div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nombre</label>
+                                <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej. Hamburguesa Royal" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Precio</label>
+                                <input type="number" step="0.01" th:field="*{precio}" class="form-control" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Stock</label>
+                                <input type="number" th:field="*{stock}" class="form-control" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Imagen</label>
+                                <input type="file" name="fileImagen" class="form-control" accept="image/*" />
+								<div class="form-text text-muted" th:if="${producto.productoId > 0}">
+								    Imagen actual: <span th:text="*{imagen}"></span>
+								</div>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" th:checked="*{estaActivo}" name="estaActivo" class="form-check-input" id="checkActivo" />
+                                <label class="form-check-label fw-bold" for="checkActivo">Activo</label>
+                            </div>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-success fw-bold py-2">GUARDAR</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold text-secondary">Listado de Productos</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" style="width: 100px;">Imagen</th>
+                                        <th>Nombre</th>
+                                        <th>Precio</th>
+                                        <th class="text-center">Stock</th>
+                                        <th class="text-center">Activo</th>
+                                        <th class="text-center" style="width: 120px;">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${productos}">
+                                        <td class="text-center">
+                                            <img th:src="@{'/uploads/productos/' + ${p.imagen}}" 
+                                                 class="img-thumbnail" 
+                                                 style="max-height: 50px; max-width: 50px; object-fit: contain;" />
+                                        </td>
+                                        <td class="fw-bold" th:text="${p.nombre}"></td>
+                                        <td th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)}"></td>
+                                        
+                                        <td class="text-center fw-bold" 
+                                            th:text="${p.stock}"
+                                            th:classappend="${p.stock <= 0} ? 'text-danger' : 'text-dark'">
+                                        </td>
+                                        
+                                        <td class="text-center">
+                                            <span th:class="${p.estaActivo} ? 'badge bg-success' : 'badge bg-danger'"
+                                                  th:text="${p.estaActivo} ? 'Sí' : 'No'">
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:href="@{/administrador/productos/editar/{id}(id=${p.productoId})}" 
+                                                   class="btn btn-outline-primary" title="Editar">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                                <a th:href="@{/administrador/productos/eliminar/{id}(id=${p.productoId})}" 
+                                                   class="btn btn-outline-danger" title="Eliminar"
+                                                   onclick="return confirm('¿Está seguro de eliminar este producto?');">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(productos)}">
+                                        <td colspan="6" class="text-center text-muted py-4">No se encontraron productos registrados.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:replace="~{layout/plantilla :: footer_layout}"></div>
+
+</body>
+</html>
