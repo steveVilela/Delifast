@@ -29,20 +29,29 @@ public class ProductoController {
     // Ruta absoluta en disco para salvar las imágenes de forma persistente
     private static final String UPLOAD_DIR = "C:/delifast_uploads/productos/";
 
-    // 1. LISTAR Y MOSTRAR FORMULARIO VACÍO
+ 
+ // 1. LISTAR Y MOSTRAR FORMULARIO VACÍO
     @GetMapping
     public String listar(Model model) {
-        model.addAttribute("producto", new Producto()); // Objeto vacío para el formulario de inserción
-        cargarComponentesComunes(model);
+        try {
+            model.addAttribute("producto", new Producto()); // Objeto vacío para el formulario de inserción
+            cargarComponentesComunes(model); // Carga las listas de productos y categorías de forma segura
+        } catch (Exception e) {
+            e.printStackTrace(); // Registra en la consola si hubo problemas al conectar con la BD
+        }
         return "administrador/productos/productos";
     }
-
+    
     // 2. RECUPERAR DATOS PARA EDITAR
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") int id, Model model) {
-        Producto p = productoService.buscarPorId(id);
-        model.addAttribute("producto", p); // Objeto cargado para mutar el formulario a modo edición
-        cargarComponentesComunes(model);
+        try {
+            Producto p = productoService.buscarPorId(id);
+            model.addAttribute("producto", p); // Objeto cargado para mutar el formulario a modo edición
+            cargarComponentesComunes(model);
+        } catch (Exception e) {
+            e.printStackTrace(); // Registra en la consola si falló la BD al buscar o cargar listas
+        }
         return "administrador/productos/productos";
     }
 
@@ -88,9 +97,9 @@ public class ProductoController {
     }
 
     // Método auxiliar para evitar duplicar cargas de catálogos en el modelo
-    private void cargarComponentesComunes(Model model) {
+    private void cargarComponentesComunes(Model model) { // 👈 ¡Limpio de throws!
         List<Producto> listaProductos = productoService.listarTodos();
-        List<Categoria> listaCategorias = categoriaService.listar(); // Asegúrate de tener este método listo en tu servicio de categorías
+        List<Categoria> listaCategorias = categoriaService.listarTodas(); 
         model.addAttribute("productos", listaProductos);
         model.addAttribute("categorias", listaCategorias);
     }

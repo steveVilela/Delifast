@@ -9,7 +9,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Vincula la ruta web /uploads/ con la ubicación física en el disco duro C:
+        // Al poner la raíz con /**, Spring buscará automáticamente en todas las subcarpetas internas (productos y categorias)
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:///C:/delifast_uploads/");
     }

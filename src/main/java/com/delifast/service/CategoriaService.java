@@ -13,28 +13,29 @@ public class CategoriaService {
     @Autowired
     private CategoriaDAO categoriaDAO;
 
-    @Transactional(readOnly = true)
-    public List<Categoria> listar() {
+   
+    public List<Categoria> listarTodas()  {
         return categoriaDAO.listar();
     }
 
-    @Transactional(readOnly = true)
-    public Categoria buscarPorId(int id) {
+    // 2. Añadimos "throws Exception" aquí
+    public Categoria buscarPorId(int id)  {
         return categoriaDAO.obtenerPorId(id);
     }
 
+    // 3. Añadimos "throws Exception" aquí
     @Transactional
-    public void registrar(Categoria c) {
-        categoriaDAO.insertar(c);
+    public void guardar(Categoria c) {
+        if (c.getCategoriaId() > 0) {
+            categoriaDAO.actualizar(c);
+        } else {
+            categoriaDAO.insertar(c);
+        }
     }
 
+    // 4. Añadimos "throws Exception" aquí
     @Transactional
-    public void actualizar(Categoria c) {
-        categoriaDAO.actualizar(c);
-    }
-
-    @Transactional
-    public void eliminar(int id) {
+    public void eliminar(int id) throws Exception {
         categoriaDAO.eliminar(id);
     }
 }
