@@ -162,6 +162,7 @@
     padding-top: 6rem;
      
     padding-bottom: 4rem;
+}
 .esp-card {
     background: #fff;
     height: 100%;
@@ -242,7 +243,7 @@
 /* Badge de precio (opcional, reemplaza inline-style) */
 .menu-price-badge {
     background-color: #e83e8c;
- 
+ }
  
  
 
