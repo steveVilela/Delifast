@@ -48,4 +48,6 @@ public class AdminLoginController {
         session.invalidate(); // Destruye todos los datos en sesión
         return "redirect:/menu";
     }
+    
+ // Prueba de enlace con GitHub - Rommel Rosales
 }

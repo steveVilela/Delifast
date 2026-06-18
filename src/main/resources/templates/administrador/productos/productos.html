@@ -7,7 +7,7 @@
 
     <div th:replace="~{layout/plantilla :: nav_bar}"></div>
 
-    <div class="container-fluid my-4">
+    <div class="container-fluid" style="margin-top: 120px; margin-bottom: 40px;">
         <div class="row">
             
             <div class="col-md-4 mb-4">
@@ -22,7 +22,9 @@
                         <form th:action="@{/administrador/productos/guardar}" 
                               th:object="${producto}" 
                               method="post" 
-                              enctype="multipart/form-data">
+                              enctype="multipart/form-data"
+							  style="background:#f0f7ff;padding:25px;border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+
                             
                             <input type="hidden" th:field="*{productoId}" />
                             
@@ -141,6 +143,45 @@
 
         </div>
     </div>
+	<script th:inline="javascript">
+	        function eliminarProducto(id) {
+	            Swal.fire({
+	                title: '¿Eliminar producto?',
+	                text: 'Esta acción no se puede deshacer',
+	                icon: 'warning',
+	                showCancelButton: true,
+	                confirmButtonColor: '#d33',
+	                cancelButtonColor: '#3085d6',
+	                confirmButtonText: 'Sí, eliminar',
+	                cancelButtonText: 'Cancelar'
+	            }).then((result) => {
+	                if (result.isConfirmed) {
+	                    // Redirección adaptada a la ruta REST/Clean URL de tu ProductoController
+	                    window.location.href = '/administrador/productos/eliminar/' + id;
+	                }
+	            });
+	        }
+
+	        document.addEventListener("DOMContentLoaded", function () {
+	            // Captura los mensajes flash que configuramos en el ProductoController
+	            const msj = '[[${msj}]]';
+	            
+	            if (msj === "error_fk") {
+	                Swal.fire({
+	                    icon: 'error',
+	                    title: 'No se puede eliminar',
+	                    text: 'Este producto tiene transacciones o registros vinculados.',
+	                    confirmButtonColor: '#3085d6'
+	                });
+	            } else if (msj === "create") {
+	                Swal.fire({ icon: 'success', title: '¡Creado!', text: 'Producto registrado con éxito.' });
+	            } else if (msj === "update") {
+	                Swal.fire({ icon: 'success', title: '¡Actualizado!', text: 'Producto modificado con éxito.' });
+	            } else if (msj === "delete") {
+	                Swal.fire({ icon: 'success', title: '¡Eliminado!', text: 'Producto removido del sistema.' });
+	            }
+	        });
+	    </script>
 
     <div th:replace="~{layout/plantilla :: footer_layout}"></div>
 
