@@ -1,0 +1,54 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="cuerpo">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h4 class="mb-0 text-dark fw-bold">⚙️ Configurar Alertas de Stock Mínimo y Bloqueo</h4>
+        <span class="badge bg-warning text-white px-3 py-2" style="background-color: #ffc107; color: #000 !important;">Ajuste Técnico</span>
+    </div>
+
+    <div class="card shadow-sm border-0 p-3 bg-white">
+        <div class="table-responsive">
+            <table class="table table-sm table-striped table-hover align-middle mb-0">
+                <thead class="table-dark small text-center">
+                    <tr>
+                        <th class="text-start">ID</th>
+                        <th class="text-start">Insumo / Materia Prima</th>
+                        <th>Unidad</th>
+                        <th>Stock Actual</th>
+                        <th style="width: 140px;">Stock Mínimo (Alerta)</th>
+                        <th style="width: 140px;">Stock Bloqueo (Cierre)</th> <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="small align-middle text-center">
+                    <tr th:each="i : ${insumos}">
+                        <td class="text-muted font-monospace text-start" th:text="${i.insumoId}">1</td>
+                        <td class="fw-bold text-dark text-start" th:text="${i.nombre}">Inka Kola Litro Botella</td>
+                        <td class="text-secondary" th:text="${i.unidadMedida}">und</td>
+                        <td class="fw-bold text-dark" th:text="${i.stock}">49</td>
+                        
+                        <form th:action="@{/administrador/inventario/actualizarParametros}" method="POST">
+                            <input type="hidden" name="insumoId" th:value="${i.insumoId}" />
+                            
+                            <td>
+                                <input type="number" name="stockMinimo" th:value="${i.stockMinimo}" 
+                                       class="form-control form-control-sm text-center fw-bold text-warning mx-auto" 
+                                       style="max-width: 90px;" min="0" required />
+                            </td>
+                            
+                            <td>
+                                <input type="number" name="stockBloqueo" th:value="${i.stockBloqueo}" 
+                                       class="form-control form-control-sm text-center fw-bold text-danger mx-auto" 
+                                       style="max-width: 90px;" min="0" required />
+                            </td>
+                            
+                            <td>
+                                <button type="submit" class="btn btn-warning btn-sm text-white fw-bold py-1 px-3" style="background-color: #ffc107; border-color: #ffc107;">
+                                    💾 Fijar
+                                </button>
+                            </td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

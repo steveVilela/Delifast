@@ -7,90 +7,112 @@
     <title>DeliFast</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
     <link th:href="@{/css/delifast.css}" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .nav-link-activo {
+            color: #ff3a44 !important; /* Rojo vibrante */
+            font-weight: bold !important;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #ff3a44 !important;
+        }
+    </style>
 </head>
 
 <body>
 
-    <nav th:fragment="nav_bar" class="navbar navbar-expand-sm navbar-light bg-white shadow-sm fixed-top">
-        <div class="container">
+    <nav th:fragment="nav_bar" class="navbar navbar-expand-sm navbar-dark fixed-top py-0 shadow" style="height: 85px; background-color: #1f242d;"> 
+        <div class="container h-100 d-flex align-items-center">
 
-            <a class="navbar-brand fw-bold" th:href="@{/inicio}">
-                DeliFast
+            <a class="navbar-brand p-0 m-0 h-100 d-flex align-items-center" th:href="@{/inicio}" style="width: 110px;">
+                <img th:src="@{/img/logo1.jpeg}" 
+                     alt="Logo DeliFast" 
+                     class="w-100 h-100 py-1" 
+                     style="object-fit: cover; max-height: 100%; border-radius: 4px;"> 
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
+            <div class="collapse navbar-collapse justify-content-end h-100 align-items-center" id="navbarNav">
+                <ul class="navbar-nav h-100 align-items-center gap-2">
 
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/inicio}">Inicio</a>
+                        <a class="nav-link text-white px-3" th:href="@{/inicio}">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/acerca}">Acerca</a>
+                        <a class="nav-link text-white px-3" th:href="@{/acerca}">Acerca</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/especialidades}">Especialidades</a>
+                        <a class="nav-link text-white px-3" th:href="@{/especialidades}">Especialidades</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/menu}">Menú</a>
+                        <a class="nav-link text-white px-3" th:href="@{/menu}">Menú</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/contacto}">Contacto</a>
+                        <a class="nav-link text-white px-3" th:href="@{/contacto}">Contacto</a>
                     </li>
 
-                    <li th:if="${session.admin != null}" class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fw-bold" href="#" role="button" data-bs-toggle="dropdown">
-                            Admin
+                    <li class="nav-item ms-lg-2">
+                        <a class="nav-link btn btn-sm btn-outline-light px-3 py-1 rounded-pill d-flex align-items-center gap-2" href="/carrito" style="border: 1px solid rgba(255,255,255,0.3);">
+                            <i class="fa-solid fa-cart-shopping text-warning"></i>
+                            <span class="text-white small fw-bold">Carrito</span>
+                            <span class="badge bg-danger rounded-pill" id="badgeCartCount">0</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" th:href="@{/administrador/productos}">Productos</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" th:href="@{/administrador/categorias}">Categorías</a>
-                            </li>
-							<li>
-							    <a class="dropdown-item" th:href="@{/administrador/clientes}">Clientes</a>
-							</li>	
-							<li>
-							    <a class="dropdown-item" th:href="@{/administrador/pedidos}">Pedidos</a>
-							</li>	
-							<li>
-							    <a class="dropdown-item" th:href="@{/administrador/inventario}">Gestion Inventario</a>
-							</li>
-                            <li>
-                                <a class="dropdown-item" th:href="@{/administrador/usuarios}">Usuarios</a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item text-danger" th:href="@{/logout}">Cerrar sesión</a>
-                            </li>
-                        </ul>
                     </li>
 
-                    <li th:if="${session.admin == null}" class="nav-item">
-                        <a class="nav-link fw-bold" th:href="@{/administrador/login}">Admin</a>
+                    <li class="nav-item" th:if="${session.admin == null}">
+                        <a class="nav-link text-danger fw-bold" th:href="@{/administrador/login}">Login</a>
                     </li>
 
+                    <li class="nav-item dropdown" th:if="${session.admin != null}">
+                        <a class="nav-link dropdown-toggle text-danger fw-bold px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Panel Admin
+                        </a>
+						<ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdown" style="background-color: #ffffff;">
+						                            
+						    <th:block th:if="${session.admin.rol == 'ADMIN'}">
+						        <li><a class="dropdown-item py-2" th:href="@{/administrador/productos}">🍔 Productos</a></li>
+						        <li><a class="dropdown-item py-2" th:href="@{/administrador/categorias}">📁 Categorías</a></li>
+						        <li><a class="dropdown-item py-2" th:href="@{/administrador/clientes}">👥 Clientes</a></li>
+						        <li><a class="dropdown-item py-2" th:href="@{/administrador/usuarios}">👤 Usuarios (Personal)</a></li>
+						    </th:block>
+
+						    <th:block th:if="${session.admin.rol == 'ADMIN' || session.admin.rol == 'ALMACEN'}">
+						        <li><hr class="dropdown-divider"></li>
+						        <li class="dropdown-header text-muted small fw-bold">OPERACIONES ALMACÉN</li>
+						        <li><a class="dropdown-item py-2" th:href="@{/administrador/inventario}">📦 Gestión Inventario</a></li>
+						        <li><a class="dropdown-item py-2" th:href="@{/administrador/reportes/almacen}">📈 Reportes de Almacen </a></li>
+							</th:block>
+
+							<th:block th:if="${session.admin.rol == 'ADMIN' || session.admin.rol == 'VENTAS'}">
+							    <li><hr class="dropdown-divider"></li>
+							    <li class="dropdown-header text-muted small fw-bold">OPERACIONES COMERCIALES</li>
+							    <li><a class="dropdown-item py-2" th:href="@{/administrador/pedidos}">📋 Pedidos Recibidos</a></li>
+							    <li><a class="dropdown-item py-2" th:href="@{/administrador/ventas}">💰 Gestión de Ventas (POS)</a></li>
+							    <li><a class="dropdown-item py-2" th:href="@{/administrador/reportes/ventas}">📊 Reportes de Ventas</a></li>
+							</th:block>
+
+						    <li><hr class="dropdown-divider"></li>
+						    <li>
+						        <a class="dropdown-item py-2 text-danger fw-bold" th:href="@{/logout}">🚪 Cerrar Sesión</a>
+						    </li>
+						</ul>
+                    </li>
                 </ul>
-            </div>
+            </div> 
         </div>
-        
-        <div style="margin-top:80px;"></div>
     </nav>
-
 
     <footer th:fragment="footer_layout" class="delifast-footer text-white mt-5 pt-5">
         <div class="container">
             <div class="row">
-
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold">🍽️ DeliFast</h5>
                     <p>Comida rápida con el mejor sabor.</p>
@@ -99,7 +121,6 @@
                     <p><i class="bi bi-envelope-fill"></i> delifast@gmail.com</p>
                     <p><i class="bi bi-clock-fill"></i> Lun - Dom 10:00 AM - 11:00 PM</p>
                 </div>
-
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold">Enlaces</h5>
                     <ul class="list-unstyled">
@@ -110,7 +131,6 @@
                         <li><a class="footer-link" th:href="@{/contacto}">Contacto</a></li>
                     </ul>
                 </div>
-
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold">Síguenos</h5>
                     <a href="https://www.facebook.com/profile.php?id=61577250814115" target="_blank">
@@ -124,23 +144,19 @@
                     </a>
                 </div>
             </div>
-
             <hr class="border-light">
-
             <div class="text-center small pb-3">
                 © 2026 DeliFast | Todos los derechos reservados
             </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+        
         <script>
             (function () {
                 const params = new URLSearchParams(window.location.search);
                 const msj = params.get("msj");
-
                 if (msj === "create") {
                     Swal.fire({ icon:"success", title:"Guardado", text:"Registro guardado correctamente", timer:2000, showConfirmButton:false });
                 }
@@ -154,6 +170,49 @@
                     Swal.fire({ icon:"error", title:"No se puede eliminar", text:"Este registro está en uso por otros elementos del sistema.", timer:3500 });
                 }
             })();
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const currentPath = window.location.pathname;
+
+                document.querySelectorAll('.navbar-nav .nav-link:not(.dropdown-toggle)').forEach(function (enlace) {
+                    const hrefTarget = enlace.getAttribute('href');
+                    if (hrefTarget && currentPath === hrefTarget) {
+                        enlace.classList.add('nav-link-activo'); 
+                    }
+                });
+
+                if (currentPath.includes('/administrador')) {
+                    const botonAdmin = document.querySelector('.navbar-nav .dropdown-toggle');
+                    if (botonAdmin) {
+                        botonAdmin.classList.add('nav-link-activo');
+                    }
+                }
+
+                document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(function (enlace) {
+                    const hrefTarget = enlace.getAttribute('href');
+                    if (hrefTarget && currentPath === hrefTarget) {
+                        enlace.classList.add('active'); 
+                    }
+                });
+
+                // Iniciar contador del carro al cargar
+                if (typeof actualizarContadorNavbar === 'function') {
+                    actualizarContadorNavbar();
+                }
+            });
+
+            // Función global para actualizar el badge rojo del carro
+            function actualizarContadorNavbar() {
+                const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+                const totalUnidades = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+                const badge = document.getElementById('badgeCartCount');
+                if (badge) {
+                    badge.innerText = totalUnidades;
+                }
+            }
+            window.addEventListener('storage', actualizarContadorNavbar);
         </script>
     </footer>
 

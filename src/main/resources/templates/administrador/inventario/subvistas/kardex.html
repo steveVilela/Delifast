@@ -1,0 +1,85 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="cuerpo">
+    <div class="card border-0 shadow-sm bg-white" style="border-radius: 10px;">
+        
+        <div class="p-3 bg-dark text-white d-flex justify-content-between align-items-center" style="border-radius: 10px 10px 0 0;">
+            <h5 class="mb-0 fw-bold">
+                📋 Reporte de Kardex de Almacén (Historial Cronológico)
+            </h5>
+            <span class="badge bg-secondary font-monospace" 
+                  th:text="${movimientos != null ? #lists.size(movimientos) + ' movimientos' : '0 movimientos'}">0 movimientos</span>
+        </div>
+		<div class="p-3 card-body">
+		    <div class="mb-3 text-end">
+		        <div class="btn-group shadow-sm" role="group" aria-label="Exportar datos">
+		            
+		            <a href="/administrador/inventario/kardex/pdf" target="_blank" class="btn btn-danger btn-sm fw-bold">
+		                <i class="fa-solid fa-file-pdf"></i> EXPORTAR KARDEX A PDF (JASPER)
+		            </a>
+		            
+		            <a href="/administrador/inventario/kardex/excel" class="btn btn-success btn-sm fw-bold">
+		                <i class="fa-solid fa-file-excel"></i>EXPORTAR KARDEX A EXCEL
+		            </a>
+					<a href="/administrador/inventario/kardex/pdf-limpio" target="_blank" class="btn btn-info text-white btn-sm fw-bold">
+					            <i class="fa-solid fa-file-signature"></i> PDF ()
+					</a>
+		            
+		        </div>
+		    </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered align-middle text-center mb-0">
+                    <thead class="table-secondary small fw-bold">
+                        <tr>
+                            <th style="width: 80px;">ID MOV</th>
+                            <th>FECHA Y HORA</th>
+                            <th>INSUMO / MATERIA PRIMA</th>
+                            <th>TIPO</th>
+                            <th>CANTIDAD</th>
+                            <th>MOTIVO / DETALLE</th>
+                            <th>OPERARIO RESPONSABLE</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        <th:block th:if="${movimientos != null}">
+                            <tr th:each="mov : ${movimientos}">
+                                <td class="fw-bold text-secondary font-monospace" th:text="${mov.movimientoId}"></td>
+                                
+                                <td class="text-muted font-monospace" th:text="${#dates.format(mov.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                                
+                                <td class="text-start fw-bold text-dark">
+                                    <span th:if="${mov.insumo != null}" th:text="${mov.insumo.nombre}"></span>
+                                    <span th:unless="${mov.insumo != null}" th:text="'Insumo ID: ' + ${mov.insumoId}"></span>
+                                </td>
+                                
+                                <td>
+                                    <span th:if="${mov.tipoMovimiento == 'INGRESO'}" 
+                                          class="badge bg-success text-dark fw-bold px-2 py-1"
+                                          style="background-color: #d1e7dd !important; color: #0f5132 !important;">ENTRADA</span>
+                                    <span th:if="${mov.tipoMovimiento == 'SALIDA'}" 
+                                          class="badge bg-danger text-dark fw-bold px-2 py-1"
+                                          style="background-color: #f8d7da !important; color: #842029 !important;">SALIDA</span>
+                                </td>
+                                
+                                <td class="fw-bold">
+                                    <span th:if="${mov.tipoMovimiento == 'INGRESO'}" class="text-success" th:text="'+ ' + ${mov.cantidad}"></span>
+                                    <span th:if="${mov.tipoMovimiento == 'SALIDA'}" class="text-danger" th:text="'- ' + ${mov.cantidad}"></span>
+                                </td>
+                                
+                                <td th:text="${mov.motivo}"></td>
+                                
+                                <td class="text-muted text-truncate" style="max-width: 180px;">
+                                    <span th:if="${mov.administrador != null}" th:text="${mov.administrador.email}"></span>
+                                    <span th:unless="${mov.administrador != null}">Sistema</span>
+                                </td>
+                            </tr>
+                        </th:block>
+                        
+                        <tr th:if="${movimientos == null or #lists.isEmpty(movimientos)}">
+                            <td colspan="7" class="text-center text-muted py-4">No se registran movimientos en el histórico del Kardex.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

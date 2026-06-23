@@ -24,6 +24,7 @@ public class CategoriaController {
     public String listar(Model model, @ModelAttribute("categoriaObj") Categoria cat) {
         try {
             model.addAttribute("categorias", categoriaService.listarTodas());
+            model.addAttribute("modulo", "categorias"); // 👈 Esto activa la pestaña Pedidos   
         } catch (Exception e) {
             e.printStackTrace();
         }

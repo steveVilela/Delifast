@@ -1,19 +1,13 @@
 package com.delifast.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.delifast.dao.AdministradorDAO;
+import java.util.List;
 import com.delifast.model.Administrador;
 
-@Service
-public class AdministradorService {
-
-    @Autowired
-    private AdministradorDAO administradorDAO;
-
-    @Transactional(readOnly = true)
-    public Administrador autenticar(String email, String password) {
-        return administradorDAO.validar(email, password);
-    }
+public interface AdministradorService {
+    Administrador login(String email, String password); // 👈 Puente para el Login
+    List<Administrador> listarUsuarios();
+    Administrador buscarPorId(int id);
+    void registrarUsuario(Administrador administrador);
+    void modificarUsuario(Administrador administrador);
+    void eliminarUsuario(int id);
 }

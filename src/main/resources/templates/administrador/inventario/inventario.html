@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/plantilla :: header_head}"></head>
+
+<body style="background-color:#f4f6f9;">
+    <div th:replace="~{layout/plantilla :: nav_bar}"></div>
+
+    <div class="container-fluid" style="margin-top: 120px; margin-bottom: 40px;">
+        
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-dark">Sistema de Inventario</h2>
+            <p class="text-muted mb-0">Gestión del catálogo, stock e ingresos de insumos</p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+                <div style="background:#f0f7ff; padding:25px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+                    
+					<h5 class="mb-4 fw-bold text-secondary text-center border-bottom pb-2">Opciones de Control</h5>
+
+					<div class="card mb-3 border-0 shadow-sm">
+					    <div class="card-body text-center">
+					        <h6 class="fw-bold">Catálogo de Insumos</h6>
+					        <p class="text-muted small mb-3">Registrar y mantener insumos</p>
+					        <a th:href="@{/administrador/inventario}" class="btn btn-primary w-100 fw-bold">Abrir Catálogo</a>
+					    </div>
+					</div>
+
+					<div class="card mb-3 border-0 shadow-sm">
+					    <div class="card-body text-center">
+					        <h6 class="fw-bold">Stock Mínimo</h6>
+					        <p class="text-muted small mb-3">Definir alertas de stock</p>
+					        <a th:href="@{/administrador/inventario(vista='stockMinimo')}" class="btn btn-warning w-100 fw-bold text-white">Configurar Alertas</a>
+					    </div>
+					</div>
+
+					<div class="card mb-3 border-0 shadow-sm">
+					    <div class="card-body text-center">
+					        <h6 class="fw-bold">Gestión de Recetas</h6>
+					        <p class="text-muted small mb-3">Vincular insumos a platos de la carta</p>
+					        <a th:href="@{/administrador/inventario(vista='recetas')}" class="btn btn-info w-100 fw-bold text-white" style="background-color: #6f42c1; border-color: #6f42c1;">Configurar Fórmulas</a>
+					    </div>
+					</div>
+
+					<div class="card mb-3 border-0 shadow-sm">
+					    <div class="card-body text-center">
+					        <h6 class="fw-bold">Registrar Ingreso</h6>
+					        <p class="text-muted small mb-3">Entrada de insumos al almacén</p>
+					        <a th:href="@{/administrador/inventario(vista='recepcionarMercaderia')}" class="btn btn-success w-100 fw-bold">Registrar Entrada</a>
+					    </div>
+					</div>
+
+					<div class="card mb-3 border-0 shadow-sm">
+					    <div class="card-body text-center">
+					        <h6 class="fw-bold">Registrar Egresos</h6>
+					        <p class="text-muted small mb-3">Salida por ventas, mermas o ajustes</p>
+					        <a th:href="@{/administrador/inventario(vista='egreso')}" class="btn btn-danger w-100 fw-bold">Registrar Salida</a>
+					    </div>
+					</div>
+
+					<div class="card border-0 shadow-sm">
+					    <div class="card-body text-center">
+					        <h6 class="fw-bold">Reporte de Kardex</h6>
+					        <p class="text-muted small mb-3">Historial cronológico de movimientos</p>
+					        <a th:href="@{/administrador/inventario(vista='kardex')}" class="btn btn-dark w-100 fw-bold">Ver Reporte General</a>
+					    </div>
+					</div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card border-0 p-4"
+                     style="background:#f0f7ff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+                    
+                    <div th:replace="~{'administrador/inventario/subvistas/' + ${vista} :: cuerpo}"></div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:replace="~{layout/plantilla :: footer_layout}"></div>
+
+	<script th:inline="javascript">
+	    document.addEventListener("DOMContentLoaded", function () {
+	        // 1. Capturamos de forma segura las alertas flash del servidor
+	        const success = /*[[${msgSuccess}]]*/ null;
+	        const error = /*[[${msgError}]]*/ null;
+	        
+	        // 2. Capturamos el contador dinámico de insumos críticos que calculamos en Java
+	        const alertasContador = /*[[${alertasContador}]]*/ 0;
+
+	        // Si hay un mensaje de éxito explícito (ej: guardaste una alerta o un ingreso)
+	        if (success) {
+	            Swal.fire({ icon: 'success', title: '¡Éxito!', html: success, confirmButtonColor: '#ffc107' });
+	        }
+	        
+	        // Si hay un error explícito
+	        if (error) {
+	            Swal.fire({ icon: 'error', title: 'Error', text: error, confirmButtonColor: '#dc3545' });
+	        }
+	        
+	        // 🔥 ACCIÓN CORRECTIVA AUTOMÁTICA: Si el administrador entra al catálogo y hay desabastecimiento
+			// 🔥 ACCIÓN CORRECTIVA: Enlaza directamente al modal logístico de tu restaurante
+			        if (alertasContador > 0 && !success && !error) {
+			            Swal.fire({
+			                icon: 'error',
+			                title: 'Quiebre de Stock Detectado',
+			                html: `¡Alerta Crítica! Tienes <b>${alertasContador}</b> insumo(s) que han alcanzado o superado el límite mínimo. Se requiere reabastecimiento urgente.`,
+			                confirmButtonText: '🔎 Ver Insumos Críticos',
+			                confirmButtonColor: '#dc3545',
+			                allowOutsideClick: false
+			            }).then((result) => {
+			                if (result.isConfirmed) {
+			                    // 🚀 Inicializamos y levantamos el modal dinámico de Bootstrap
+			                    var modalLogistica = new bootstrap.Modal(document.getElementById('modalInsumosCriticos'));
+			                    modalLogistica.show();
+			                }
+			            });
+			        }
+			    });
+
+			    // 📝 FUNCIÓN DE AUDITORÍA: Simulación de integración comercial de Abastecimiento
+			    function simularOrdenCompra() {
+			        // Cerramos el modal primero
+			        var modalElement = document.getElementById('modalInsumosCriticos');
+			        var modalInstance = bootstrap.Modal.getInstance(modalElement);
+			        if (modalInstance) modalInstance.hide();
+
+			        // Lanzamos alerta de éxito del flujo en cascada
+			        Swal.fire({
+			            icon: 'success',
+			            title: '¡Orden de Compra Generada!',
+			            html: `Se ha estructurado con éxito el documento de reposición automática. El requerimiento fue enviado al módulo de **Proveedores** para su despacho y facturación.`,
+			            confirmButtonColor: '#28a745'
+			        });
+			    }
+	</script>
+	<div class="modal fade" id="modalInsumosCriticos" tabindex="-1" aria-labelledby="modalCriticosLabel" aria-hidden="true">
+	        <div class="modal-dialog modal-dialog-centered">
+	            <div class="modal-content text-white" style="background: #1f242d; border-radius: 10px;">
+	                <div class="modal-header border-secondary">
+	                    <h5 class="modal-title text-danger fw-bold" id="modalCriticosLabel">🚨 Reabastecimiento de Almacén</h5>
+	                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+	                </div>
+	                <div class="modal-body">
+	                    <p class="small text-secondary">Los siguientes insumos han alcanzado o superado el límite mínimo configurado en la base de datos:</p>
+	                    
+	                    <div class="list-group mb-3 text-dark">
+	                        <th:block th:each="ins : ${insumos}">
+	                            <div class="list-group-item d-flex justify-content-between align-items-center bg-light" 
+	                                 th:if="${ins.stock <= ins.stockMinimo}">
+	                                <div>
+	                                    <strong class="text-dark" th:text="${ins.nombre}">Nombre Insumo</strong> <br>
+	                                    <small class="text-muted">
+	                                        Stock actual: <span th:text="${ins.stock}">0</span> <span th:text="${ins.unidadMedida}">und</span> 
+	                                        | Mínimo: <span th:text="${ins.stockMinimo}">0</span> <span th:text="${ins.unidadMedida}">und</span>
+	                                    </small>
+	                                </div>
+	                                <span class="badge bg-danger">Quiebre</span>
+	                            </div>
+	                        </th:block>
+	                    </div>
+
+	                    <div class="p-2 bg-dark rounded border border-secondary mb-2">
+	                        <small class="text-warning d-block fw-bold">💡 Acoplamiento Logístico:</small>
+	                        <small class="text-muted">Al presionar el botón inferior, el sistema consolidará las cantidades faltantes y estructurará un requerimiento formal en formato borrador para tus proveedores.</small>
+	                    </div>
+	                </div>
+	                <div class="modal-footer border-secondary">
+	                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+	                    <button type="button" class="btn btn-danger btn-sm fw-bold shadow" onclick="simularOrdenCompra()">
+	                        📝 GENERAR ORDEN DE COMPRA
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div></body>
+</html>

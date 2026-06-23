@@ -79,4 +79,41 @@ public class ProductoDAOImpl implements ProductoDAO {
         query.setParameter("id", productoId);
         query.executeUpdate();
     }
+    
+ // ==========================================================
+    // 📊 REPORTE: TOP 5 PLATOS MÁS VENDIDOS (ANALÍTICA COMERCIAL)
+    // ==========================================================
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<com.delifast.dto.ProductoReporteDTO> obtenerTopPlatosMasVendidos() {
+        // SQL Nativo apuntando a las tablas de MySQL, agrupando por producto
+        String sql = "SELECT p.producto_id, p.nombre, p.precio, " +
+                     "SUM(dp.cantidad) as cantidad_vendida, " +
+                     "SUM(dp.cantidad * dp.precio_unitario) as total_recaudado " +
+                     "FROM detalle_pedidos dp " + // 💡 Verifica si tu tabla es 'detalle_pedidos' o 'detalle_ventas'
+                     "JOIN productos p ON p.producto_id = dp.producto_id " +
+                     "GROUP BY p.producto_id, p.nombre, p.precio " +
+                     "ORDER BY cantidad_vendida DESC LIMIT 5";
+        
+        // Ejecutamos como consulta nativa porque procesa funciones SQL (SUM/GROUP BY)
+        Query query = entityManager.createNativeQuery(sql);
+        List<Object[]> resultados = query.getResultList();
+        
+        List<com.delifast.dto.ProductoReporteDTO> listaTop = new java.util.ArrayList<>();
+        
+        // Mapeamos manualmente el arreglo genérico Object[] a tu clase DTO estructurada
+        for (Object[] row : resultados) {
+            com.delifast.dto.ProductoReporteDTO dto = new com.delifast.dto.ProductoReporteDTO(
+                ((Number) row[0]).intValue(),    // producto_id
+                (String) row[1],                 // nombre
+                ((Number) row[2]).doubleValue(), // precio
+                ((Number) row[3]).longValue(),   // cantidad_vendida
+                ((Number) row[4]).doubleValue()  // total_recaudado
+            );
+            listaTop.add(dto);
+        }
+        
+        return listaTop;
+    }
+    
 }

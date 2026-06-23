@@ -6,6 +6,7 @@ import com.delifast.model.Cliente;
 public interface ClienteService {
     List<Cliente> listarTodos();
     Cliente buscarPorId(int id);
+    Cliente buscarPorDni(String dni);
     void registrar(Cliente c);
     void modificar(Cliente c);
     void remover(int id);

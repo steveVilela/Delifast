@@ -42,4 +42,11 @@ public class ClienteServiceImpl implements ClienteService {
     public void remover(int id) {
         clienteDAO.eliminar(id);
     }
+    
+    
+    @Override
+    public Cliente buscarPorDni(String dni) {
+        return clienteDAO.buscarPorDni(dni);
+    }
+    
 }

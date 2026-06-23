@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!-- Jalamos de forma limpia el layout unificado del HEAD con los CDNs y estilos -->
     <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
 </head>
 <body>
 
-    <!-- Insertamos de forma dinámica el Navbar con control de sesión activo -->
     <div th:replace="~{layout/plantilla :: nav_bar}"></div>
 
     <section class="menu py-5" id="menu">
-        <div class="container">
+        <div class="container" style="margin-top: 70px; margin-bottom: 50px;">
 
             <div class="text-center mb-5">
                 <h1 class="fw-bold display-6" style="color:#e83e8c;">Nuestro Menú</h1>
@@ -19,7 +17,6 @@
                 </p>
             </div>
 
-            <!-- TABS DE NAVEGACIÓN DE STRAP (Estáticos para filtrado en UI) -->
             <ul class="nav nav-pills justify-content-center gap-2 mb-5" role="tablist">
                 <li class="nav-item">
                     <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#todos">Todos</button>
@@ -37,33 +34,24 @@
 
             <div class="tab-content">
 
-                <!------------------ PESTAÑA: TODOS ------------------>
                 <div class="tab-pane fade show active" id="todos">
                     <div class="row g-4">
-                        <!-- Iteramos de forma directa la colección inyectada por el controlador -->
                         <div th:each="p : ${productos}" class="col-sm-6 col-lg-4">
                             <div class="card border-0 shadow-sm rounded-4 h-100 text-center position-relative">
-                                
-                                <!-- BADGE DE PRECIO (Thymeleaf maneja el formato de decimales automáticamente) -->
                                 <span class="price-badge" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
-
-                                <!-- IMAGEN -->
                                 <div class="thumb-wrapper">
                                     <img th:src="@{'/uploads/productos/' + ${p.imagen}}" th:alt="${p.nombre}">
                                 </div>
-
-                                <!-- CONTENIDO -->
                                 <div class="card-body">
                                     <h6 class="fw-bold mb-1" th:text="${p.nombre}"></h6>
                                     <p class="small text-muted mb-2" th:text="'Stock: ' + ${p.stock}"></p>
 
-                                    <!-- VALIDACIÓN DE COMPRA EN BASE A DISPONIBILIDAD -->
-                                    <form th:if="${p.stock > 0}" method="post" th:action="@{/carrito/agregar}">
-                                        <input type="hidden" name="productoId" th:value="${p.productoId}">
-                                        <input type="hidden" name="cantidad" value="1">
-                                        <button type="submit" class="btn btn-primary w-100">🛒 Ordenar ahora</button>
-                                    </form>
-                                    
+                                    <div th:if="${p.stock > 0}">
+                                        <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" 
+                                                th:onclick="agregarAlCarro([[${p.productoId}]], [[${p.nombre}]], [[${p.precio}]], [[${p.stock}]])">
+                                            <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
+                                        </button>
+                                    </div>
                                     <span th:unless="${p.stock > 0}" class="badge bg-danger">Agotado</span>
                                 </div>
                             </div>
@@ -71,7 +59,6 @@
                     </div>
                 </div>
 
-                <!------------------ PESTAÑA: PLATOS PRINCIPALES (id_cat = 3) ------------------>
                 <div class="tab-pane fade" id="platos">
                     <div class="row g-4">
                         <div th:each="p : ${productos}" th:if="${p.categoriaId == 3}" class="col-sm-6 col-lg-4">
@@ -83,11 +70,12 @@
                                 <div class="card-body">
                                     <h6 class="fw-bold mb-1" th:text="${p.nombre}"></h6>
                                     <p class="small text-muted mb-2" th:text="'Stock: ' + ${p.stock}"></p>
-                                    <form th:if="${p.stock > 0}" method="post" th:action="@{/carrito/agregar}">
-                                        <input type="hidden" name="productoId" th:value="${p.productoId}">
-                                        <input type="hidden" name="cantidad" value="1">
-                                        <button type="submit" class="btn btn-primary w-100">🛒 Ordenar ahora</button>
-                                    </form>
+                                    <div th:if="${p.stock > 0}">
+                                        <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" 
+                                                th:onclick="agregarAlCarro([[${p.productoId}]], [[${p.nombre}]], [[${p.precio}]], [[${p.stock}]])">
+                                            <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
+                                        </button>
+                                    </div>
                                     <span th:unless="${p.stock > 0}" class="badge bg-danger">Agotado</span>
                                 </div>
                             </div>
@@ -95,7 +83,6 @@
                     </div>
                 </div>
 
-                <!------------------ PESTAÑA: POSTRES (id_cat = 2) ------------------>
                 <div class="tab-pane fade" id="postres">
                     <div class="row g-4">
                         <div th:each="p : ${productos}" th:if="${p.categoriaId == 2}" class="col-sm-6 col-lg-4">
@@ -107,11 +94,12 @@
                                 <div class="card-body">
                                     <h6 class="fw-bold mb-1" th:text="${p.nombre}"></h6>
                                     <p class="small text-muted mb-2" th:text="'Stock: ' + ${p.stock}"></p>
-                                    <form th:if="${p.stock > 0}" method="post" th:action="@{/carrito/agregar}">
-                                        <input type="hidden" name="productoId" th:value="${p.productoId}">
-                                        <input type="hidden" name="cantidad" value="1">
-                                        <button type="submit" class="btn btn-primary w-100">🛒 Ordenar ahora</button>
-                                    </form>
+                                    <div th:if="${p.stock > 0}">
+                                        <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" 
+                                                th:onclick="agregarAlCarro([[${p.productoId}]], [[${p.nombre}]], [[${p.precio}]], [[${p.stock}]])">
+                                            <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
+                                        </button>
+                                    </div>
                                     <span th:unless="${p.stock > 0}" class="badge bg-danger">Agotado</span>
                                 </div>
                             </div>
@@ -119,7 +107,6 @@
                     </div>
                 </div>
 
-                <!------------------ PESTAÑA: BEBIDAS (id_cat = 1) ------------------>
                 <div class="tab-pane fade" id="bebidas">
                     <div class="row g-4">
                         <div th:each="p : ${productos}" th:if="${p.categoriaId == 1}" class="col-sm-6 col-lg-4">
@@ -131,11 +118,12 @@
                                 <div class="card-body">
                                     <h6 class="fw-bold mb-1" th:text="${p.nombre}"></h6>
                                     <p class="small text-muted mb-2" th:text="'Stock: ' + ${p.stock}"></p>
-                                    <form th:if="${p.stock > 0}" method="post" th:action="@{/carrito/agregar}">
-                                        <input type="hidden" name="productoId" th:value="${p.productoId}">
-                                        <input type="hidden" name="cantidad" value="1">
-                                        <button type="submit" class="btn btn-primary w-100">🛒 Ordenar ahora</button>
-                                    </form>
+                                    <div th:if="${p.stock > 0}">
+                                        <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" 
+                                               th:onclick="agregarAlCarro([[${p.productoId}]], [[${p.nombre}]], [[${p.precio}]], [[${p.stock}]])">
+                                            <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
+                                        </button>
+                                    </div>
                                     <span th:unless="${p.stock > 0}" class="badge bg-danger">Agotado</span>
                                 </div>
                             </div>
@@ -147,10 +135,8 @@
         </div>
     </section>
 
-    <!-- Insertamos de forma dinámica el pie de página común con scripts y SweetAlerts -->
     <div th:replace="~{layout/plantilla :: footer_layout}"></div>
 
-    <!-- Estilos locales integrados de forma limpia -->
     <style>
         .thumb-wrapper {
             position: relative;
@@ -184,6 +170,66 @@
             z-index: 2;
         }
     </style>
+	
+	<script>
+	    // 🟢 FUNCIÓN UNIFICADA CON VALIDACIÓN ASÍNCRONA DE INSUMOS (DELIFAST)
+	    function agregarAlCarro(id, nombre, precio, stock) {
+	        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+	        let itemExistente = carrito.find(item => item.productoId === id);
+	        
+	        // Calculamos cuántas unidades quiere acumular en total para validarlo en cocina
+	        let cantidadAEvaluar = itemExistente ? (itemExistente.cantidad + 1) : 1;
 
+	        // 🚀 Consultamos dinámicamente al servidor antes de alterar la memoria local
+	        fetch(`/carrito/validar-insumos?productoId=${id}&cantidad=${cantidadAEvaluar}`)
+	            .then(response => response.json())
+	            .then(data => {
+	                if (data.disponible) {
+	                    // SI HAY INSUMOS: Procedemos con el flujo seguro de agregar/incrementar
+	                    if (itemExistente) {
+	                        itemExistente.cantidad += 1;
+	                    } else {
+	                        carrito.push({
+	                            productoId: id,
+	                            nombre: nombre,
+	                            cantidad: 1,
+	                            precioUnitario: parseFloat(precio),
+	                            stockMaximo: parseInt(stock) // Mantenemos el stock comercial guardado
+	                        });
+	                    }
+	                    
+	                    localStorage.setItem('carrito', JSON.stringify(carrito));
+	                    
+	                    // Actualiza la burbuja del Navbar inmediatamente si existe
+	                    if (typeof actualizarContadorNavbar === 'function') {
+	                        actualizarContadorNavbar();
+	                    }
+
+	                    Swal.fire({ 
+	                        icon: 'success', 
+	                        title: '¡Añadido!', 
+	                        text: `${nombre} va al carrito`, 
+	                        toast: true, 
+	                        position: 'top-end', 
+	                        showConfirmButton: false, 
+	                        timer: 2000 
+	                    });
+	                    
+	                } else {
+	                    // 🛑 NO HAY INSUMOS EN COCINA (CHOCÓ CONTRA EL STOCK MÍNIMO/BLOQUEO)
+	                    Swal.fire({
+	                        icon: 'error',
+	                        title: 'Plato Agotado en Cocina',
+	                        text: `Lo sentimos, no contamos con insumos suficientes para preparar más unidades de ${nombre} en este momento.`,
+	                        confirmButtonColor: '#ff3a44'
+	                    });
+	                }
+	            })
+	            .catch(err => {
+	                console.error("Error al validar stock de insumos en DeliFast:", err);
+	                Swal.fire('Error de Conexión', 'No se pudo verificar el inventario de cocina.', 'error');
+	            });
+	    } // 👈 Aquí se cierra la función de manera correcta
+	</script>
 </body>
 </html>

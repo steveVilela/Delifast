@@ -1,0 +1,87 @@
+<div th:fragment="contenido_detalle">
+    <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fw-bold" id="detalleModalLabel" 
+            th:text="'🛒 Detalle del Pedido #' + ${pedido != null ? pedido.pedidoId : '---'}"></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    
+    <div class="modal-body" th:if="${pedido != null}">
+        <div class="mb-3 p-3 bg-light rounded border">
+            <div class="row g-2">
+                <div class="col-sm-6">
+                    <p class="mb-2">
+                        <strong>📅 Fecha de Registro:</strong> <br>
+                        <span class="font-monospace text-muted small" 
+                              th:text="${pedido.fechaPedido != null ? #temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm') : '-------'}">
+                        </span>
+                    </p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="mb-2">
+                        <strong>💳 Método de Pago:</strong> <br>
+                        <span class="badge bg-secondary px-2 py-1" th:text="${pedido.metodoPago}"></span>
+                    </p>
+                </div>
+                <div class="col-12">
+                    <hr class="my-2 text-muted">
+                    <p class="mb-2">
+                        <strong>👤 Cliente:</strong> 
+                        <span class="text-dark fw-bold" th:text="${pedido.cliente != null ? pedido.cliente.nombreCompleto : 'Cliente Express'}"></span>
+                    </p>
+                    
+                    <p class="mb-0">
+                        <strong>📍 Dirección de Entrega:</strong> <br>
+                        <span th:if="${!#strings.isEmpty(pedido.direccionEntrega)}" 
+                              class="text-primary fw-bold" 
+                              th:text="${pedido.direccionEntrega}">
+                        </span>
+                        <span th:if="${#strings.isEmpty(pedido.direccionEntrega)}" 
+                              class="text-muted small fst-italic">
+                              🏪 Venta Directa en Mostrador (Sin Envío)
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle mb-0">
+                <thead class="table-secondary text-center small fw-bold">
+                    <tr>
+                        <th>Producto / Artículo</th>
+                        <th style="width: 80px;">Cant.</th>
+                        <th style="width: 100px;">Precio</th>
+                        <th style="width: 110px;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    <tr th:each="det : ${detalles}">
+                        <td class="fw-bold" th:text="${det.producto != null ? det.producto.nombre : 'Producto ID: ' + det.productoId}"></td>
+                        <td class="text-center font-monospace" th:text="${det.cantidad}"></td>
+                        <td class="text-end font-monospace" th:text="'S/ ' + ${#numbers.formatDecimal(det.precioUnitario, 1, 2)}"></td>
+                        <td class="text-end fw-bold text-secondary font-monospace" 
+                            th:text="'S/ ' + ${#numbers.formatDecimal(det.cantidad * det.precioUnitario, 1, 2)}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(detalles)}">
+                        <td colspan="4" class="text-center text-muted py-3">No se encontraron los artículos de esta orden.</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="table-light">
+                        <td colspan="3" class="text-end fw-bold text-secondary">TOTAL BOLETA:</td>
+                        <td class="text-end fw-bold text-success font-monospace fs-6" 
+                            th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    
+    <div class="modal-body text-center text-muted py-4" th:unless="${pedido != null}">
+        ⚠️ Ocurrió un error al recuperar la estructura de la orden seleccionada.
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary fw-bold shadow-sm btn-sm" data-bs-dismiss="modal">Cerrar</button>
+    </div>
+</div>

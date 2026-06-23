@@ -17,10 +17,23 @@ public class MenuController {
     // Intercepta las solicitudes GET dirigidas a la URL "/menu"
     @GetMapping("/menu")
     public String verMenu(Model model) {
-        // Ejecuta el método optimizado del DAO que filtra solo productos activos y con stock > 0
+        // 1. Recuperamos la lista base de productos activos desde el DAO
         List<Producto> productosActivos = productoService.listarSoloActivos();
         
-        // Adjunta la colección al objeto contenedor (Reemplaza a req.setAttribute)
+        /* ====================================================================
+           🚀 SINCRONIZACIÓN EN TIEMPO REAL CON LA COCINA (KARDEX)
+           Recorremos cada producto para asignarle su stock real según insumos libres
+           ==================================================================== */
+        for (Producto prod : productosActivos) {
+            int stockRealInsumos = productoService.calcularStockRealPorInsumos(prod.getProductoId());
+            
+            // Reemplazamos temporalmente en memoria el stock estático por el real de la cocina
+            prod.setStock(stockRealInsumos);
+            
+            System.out.println("📊 Sincronización Catálogo -> Producto: " + prod.getNombre() + " | Stock Real calculado: " + stockRealInsumos);
+        }
+        
+        // 2. Adjuntamos la colección ya recalculada y protegida al modelo para Thymeleaf
         model.addAttribute("productos", productosActivos);
         
         // Despacha la renderización a: src/main/resources/templates/menu.html

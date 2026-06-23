@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+</head>
+<body style="background-color:#f4f6f9;">
+
+    <nav th:replace="~{layout/plantilla :: nav_bar}"></nav>
+
+    <div class="container-fluid" style="margin-top: 140px; margin-bottom: 60px;">
+        <div class="container">
+            <h2 class="mb-4 fw-bold text-dark">
+                <i class="fa-solid fa-cart-shopping text-warning"></i> Mi Carrito de Compras
+            </h2>
+            
+            <div class="row g-4">
+                <div class="col-lg-8 mb-4">
+                    <div class="card border-0 p-4" style="background:#f0f7ff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle mb-0" id="tablaCarrito" style="background:#f0f7ff;">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>PRODUCTO</th>
+                                        <th style="width: 120px;">PRECIO</th>
+                                        <th style="width: 130px;">CANTIDAD</th>
+                                        <th style="width: 120px;">SUBTOTAL</th>
+                                        <th style="width: 90px;">ACCIÓN</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsCarrito">
+                                    </tbody>
+                            </table>
+                        </div>
+                        
+						<div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary border-opacity-25">
+						                            <h4 class="mb-0 text-dark">Total a Pagar:</h4>
+						                            <h4 class="mb-0 fw-bold text-danger" id="totalCarrito">S/. 0.00</h4>
+						 </div>
+						                        
+						 <div class="d-flex flex-wrap gap-2 mt-3">
+						                            <a href="/menu" class="btn btn-info text-white fw-bold px-3">
+						                                <i class="fa-solid fa-arrow-left"></i> Añadir otro Producto
+						                            </a>
+						                            
+						                            <button type="button" class="btn btn-outline-danger fw-bold px-3" onclick="cancelarCompra()">
+						                                <i class="fa-solid fa-ban"></i> Cancelar Compra
+						                            </button>
+						 </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card border-0 p-4" style="background:#f0f7ff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+                        <h5 class="fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2 text-success">
+                            <i class="fa-solid fa-user-check"></i> Datos de Entrega y Pago
+                        </h5>
+                        
+                        <form id="formCheckout">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">DNI / Identificación</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control" id="txtDni" maxlength="8" pattern="\d{8}" required placeholder="Ingresa tu DNI de 8 dígitos">
+                                    <div id="statusCliente" class="form-text fw-bold mt-1"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">Nombre Completo</label>
+                                <input type="text" class="form-control" id="txtNombre" required placeholder="Ej. Steven Vilela">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">Teléfono Móvil</label>
+                                <input type="text" class="form-control" id="txtTelefono" required placeholder="Ej. 987654321">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">Dirección Exacta de Envío</label>
+                                <input type="text" class="form-control" id="txtDireccion" required placeholder="Ej. Av. Primavera 456">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="txtEmail" required placeholder="nombre@correo.com">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-secondary">Método de Pago</label>
+                                <select class="form-select" id="cboMetodoPago" required>
+                                    <option value="TARJETA">💳 Tarjeta de Crédito / Débito</option>
+                                    <option value="YAPE">📱 Yape / Plin</option>
+                                    <option value="EFECTIVO">💵 Pago Contraentrega</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success fw-bold py-2 shadow-sm">
+                                    <i class="fa-solid fa-cash-register"></i> CONFIRMAR Y PAGAR ORDEN
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{layout/plantilla :: footer_layout}"></div>
+
+    <script th:inline="javascript">
+        function cargarTablaCarrito() {
+            const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            const tbody = document.getElementById('itemsCarrito');
+            let total = 0;
+            
+            tbody.innerHTML = '';
+
+            if (carrito.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Tu carrito está vacío. ¡Agrega deliciosos platos!</td></tr>`;
+                document.getElementById('totalCarrito').innerText = 'S/. 0.00';
+                return;
+            }
+
+            carrito.forEach((prod, index) => {
+                const subtotal = prod.cantidad * prod.precioUnitario;
+                total += subtotal;
+
+                const maxStock = parseInt(prod.stockMaximo) || 0;
+                const estaAlLimite = (prod.cantidad >= maxStock);
+                const claseBotonMas = estaAlLimite ? 'btn-danger' : 'btn-outline-secondary';
+                const atributoDisabled = estaAlLimite ? 'disabled' : '';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="text-start">
+                            <span class="fw-bold text-dark">${prod.nombre}</span>
+                            ${estaAlLimite ? '<br><small class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> ¡Límite de stock alcanzado!</small>' : ''}
+                        </td>
+                        <td class="text-end fw-bold text-primary">S/. ${prod.precioUnitario.toFixed(2)}</td>
+                        <td class="text-center">
+                            <div class="input-group input-group-sm mx-auto" style="width: 100px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="cambiarCantidad(${index}, -1)">-</button>
+                                <input type="text" class="form-control text-center bg-white fw-bold text-dark" value="${prod.cantidad}" readonly>
+                                <button class="btn ${claseBotonMas}" type="button" ${atributoDisabled} onclick="cambiarCantidad(${index}, 1, ${maxStock})">+</button>
+                            </div>
+                        </td>
+                        <td class="text-end fw-bold text-dark">S/. ${subtotal.toFixed(2)}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarItem(${index})">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('totalCarrito').innerText = `S/. ${total.toFixed(2)}`;
+        }
+
+        function cambiarCantidad(index, cambio, maxStock) {
+            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            let producto = carrito[index];
+            let nuevaCantidad = producto.cantidad + cambio;
+            
+            if (nuevaCantidad < 1) return; 
+            
+            if (cambio > 0 && nuevaCantidad > maxStock) {
+                Swal.fire({ icon: 'warning', title: 'Límite de Stock', text: 'Lo sentimos, no hay más unidades disponibles de este plato.', toast: true, position: 'top-end', timer: 2500, showConfirmButton: false });
+                return;
+            }
+            
+            producto.cantidad = nuevaCantidad;
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            cargarTablaCarrito();
+            if (typeof actualizarContadorNavbar === 'function') {
+                actualizarContadorNavbar();
+            }
+        }
+
+        function eliminarItem(index) {
+            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            carrito.splice(index, 1);
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            cargarTablaCarrito();
+            if (typeof actualizarContadorNavbar === 'function') {
+                actualizarContadorNavbar();
+            }
+        }
+
+        function cancelarCompra() {
+            Swal.fire({
+                title: '¿Deseas cancelar la compra?',
+                text: "Se vaciarán todos los productos seleccionados de tu carrito.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, cancelar y vaciar',
+                cancelButtonText: 'No, mantener'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('carrito');
+                    if (typeof actualizarContadorNavbar === 'function') {
+                        actualizarContadorNavbar();
+                    }
+                    window.location.href = '/menu';
+                }
+            });
+        }
+
+        document.getElementById('txtDni').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, ''); 
+            const dni = this.value;
+            const statusDiv = document.getElementById('statusCliente');
+            
+            if (dni.length === 8) {
+                statusDiv.innerHTML = `<span class="text-secondary"><i class="fa-solid fa-spinner fa-spin"></i> Buscando cliente...</span>`;
+                
+                fetch(`/administrador/ventas/buscar-cliente?dni=${dni}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'found') {
+                            statusDiv.innerHTML = `<span class="text-success"><i class="fa-solid fa-circle-check"></i> ¡Cliente antiguo detectado!</span>`;
+                            document.getElementById('txtNombre').value = data.nombre || '';
+                            document.getElementById('txtDireccion').value = data.direccion || '';
+                            document.getElementById('txtTelefono').value = data.telefono || '';
+                            document.getElementById('txtEmail').value = data.email || '';
+                            
+                            Swal.fire({ icon: 'info', title: '¡Hola de nuevo!', text: `Hemos recuperado tus datos, ${data.nombre}.`, toast: true, position: 'top-end', timer: 2500, showConfirmButton: false });
+                        } else {
+                            statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-user-plus"></i> Cliente nuevo (Se registrará al pagar).</span>`;
+                            document.getElementById('txtNombre').value = '';
+                            document.getElementById('txtDireccion').value = '';
+                            document.getElementById('txtTelefono').value = '';
+                            document.getElementById('txtEmail').value = '';
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        statusDiv.innerHTML = `<span class="text-danger">Error al validar DNI</span>`;
+                    });
+            } else {
+                statusDiv.innerHTML = '';
+            }
+        });
+
+        document.getElementById('formCheckout').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            if(carrito.length === 0) {
+                Swal.fire('Carrito Vacío', 'Agrega productos antes de intentar pagar.', 'warning');
+                return;
+            }
+
+            const payload = {
+                metodoPago: document.getElementById('cboMetodoPago').value,
+                dni: document.getElementById('txtDni').value,
+                nombreCompleto: document.getElementById('txtNombre').value,
+                telefono: document.getElementById('txtTelefono').value,
+                direccion: document.getElementById('txtDireccion').value,
+                email: document.getElementById('txtEmail').value,
+                detalles: carrito.map(item => ({
+                    productoId: item.productoId,
+                    cantidad: item.cantidad,
+                    precioUnitario: item.precioUnitario
+                }))
+            };
+
+            fetch('/carrito/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    Swal.fire({ icon: 'success', title: '¡Pedido Confirmado!', text: 'Tu orden #' + data.pedidoId + ' ha sido recibida con éxito en Delifast.', confirmButtonText: 'Genial' })
+                    .then(() => {
+                        localStorage.removeItem('carrito');
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error en la transacción', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error Crítico', 'No se pudo conectar con el servidor web.', 'error');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', cargarTablaCarrito);
+    </script>
+</body>
+</html>

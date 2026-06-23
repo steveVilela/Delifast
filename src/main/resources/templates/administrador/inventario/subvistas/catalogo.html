@@ -1,0 +1,78 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="cuerpo">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h4 class="mb-0 text-dark fw-bold">📋 Catálogo General de Insumos</h4>
+        <span class="text-muted small">Vista en tiempo real del Almacén</span>
+    </div>
+
+	<div class="row g-3 mb-4">
+	        
+	        <div th:class="${alertasContador > 0} ? 'col-md-4' : 'col-md-6'">
+	            <div class="card border-0 shadow-sm p-3 bg-white text-center h-100">
+	                <h6 class="text-muted small fw-bold mb-1">TOTAL INSUMOS EN REGISTRO</h6>
+	                <h3 class="fw-bold text-primary mb-0" th:text="${#lists.size(insumos)}">0</h3>
+	            </div>
+	        </div>
+	        
+	        <div th:class="${alertasContador > 0} ? 'col-md-4' : 'col-md-6'">
+	            <div class="card border-0 shadow-sm p-3 bg-white text-center h-100 d-flex flex-column justify-content-center align-items-center">
+	                <h6 class="text-muted small fw-bold mb-1">ESTADO OPERATIVO</h6>
+	                <span th:class="${alertasContador > 0} ? 'badge bg-warning text-dark fw-bold px-3 py-2 mt-1' : 'badge bg-success text-dark fw-bold px-3 py-2 mt-1'"
+	                      th:text="${alertasContador > 0} ? '⚠️ Requiere Atención' : '🟢 Monitoreo Activo'"
+	                      th:style="${alertasContador > 0} ? 'background-color: #fff3cd !important;' : 'background-color: #d1e7dd !important;'">
+	                    🟢 Monitoreo Activo
+	                </span>
+	            </div>
+	        </div>
+
+	        <div class="col-md-4" th:if="${alertasContador > 0}">
+	            <div class="card border-0 shadow-sm p-3 text-center h-100" style="background-color: #f8d7da; border-left: 5px solid #dc3545 !important;">
+	                <h6 class="text-danger small fw-bold mb-1" style="color: #842029 !important;">INSUMOS CRÍTICOS</h6>
+	                <h3 class="fw-bold mb-0" style="color: #b02a37 !important;" th:text="${alertasContador} + ' por Agotarse'">
+	                    1 por Agotarse
+	                </h3>
+	            </div>
+	        </div>
+
+	    </div>
+
+    <div class="card shadow-sm border-0 p-3 bg-white">
+        <div class="table-responsive">
+            <table class="table table-sm table-striped table-hover align-middle mb-0">
+                <thead class="table-dark small">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre del Insumo / Materia Prima</th>
+                        <th>Unidad</th>
+                        <th class="text-center">Stock Actual</th>
+                        <th class="text-center">Stock Mínimo</th>
+                        <th class="text-center">Estado de Alerta</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    <tr th:each="i : ${insumos}">
+                        <td class="text-muted font-monospace" th:text="${i.insumoId}">1</td>
+                        <td class="fw-bold text-dark" th:text="${i.nombre}">Inka Kola Litro</td>
+                        <td class="text-secondary" th:text="${i.unidadMedida}">und</td>
+                        
+                        <td class="text-center fw-bold text-dark fs-6" th:text="${i.stock}">0</td>
+                        
+                        <td class="text-center text-muted font-monospace" th:text="${i.stockMinimo}">0</td>
+                        
+                        <td class="text-center">
+                            <span th:if="${i.stock <= i.stockMinimo}" class="badge bg-danger text-white px-2 py-1 fw-bold">
+                                ⚠️ Reabastecer Urgente
+                            </span>
+                            <span th:if="${i.stock > i.stockMinimo}" class="badge bg-success text-dark px-2 py-1" style="background-color: #28a745; color: #000000 !important; font-weight: bold;">
+                                ✅ Stock Seguro
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(insumos)}">
+                        <td colspan="6" class="text-center text-muted py-4">No hay insumos en el almacén.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

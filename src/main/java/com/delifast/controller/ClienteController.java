@@ -26,6 +26,7 @@ public class ClienteController {
     public String listar(Model model) {
         try {
             model.addAttribute("cliente", new Cliente()); // Objeto vacío para el formulario
+            model.addAttribute("modulo", "clientes"); // 👈 Esto activa la pestaña Pedidos
             model.addAttribute("clientes", clienteService.listarTodos()); // Carga la tabla
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,32 +3,45 @@
 <head>
     <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
 </head>
-<body>
+<body style="background-color:#f4f6f9;">
 
-    <div th:replace="~{layout/plantilla :: nav_bar}"></div>
+    <nav th:replace="~{layout/plantilla :: nav_bar}"></nav>
 
-    <div class="container my-5" style="max-width:460px;">
-        <div class="card shadow-sm border-0">
+    <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 75vh; margin-top: 100px; margin-bottom: 40px;">
+        
+        <div class="card shadow-sm border-0" 
+             style="background:#f0f7ff; width: 100%; max-width: 440px; border-radius: 10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
             <div class="card-body p-4">
 
-                <h1 class="h4 mb-3">Acceso al Panel</h1>
+                <h4 class="text-center mb-4 text-success fw-bold">
+                    🔐 Acceso al Panel Administrativo
+                </h4>
+                <hr class="mb-4">
                 
-                <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
+                <div th:if="${error != null}" class="alert alert-danger border-0 shadow-sm text-center py-2" th:text="${error}"></div>
 
                 <form th:action="@{/administrador/login}" method="post">
 
                     <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" placeholder="admin@delifast.local" required>
+                        <label class="form-label fw-bold text-secondary">Correo Electrónico</label>
+                        <input type="email" name="email" class="form-control" placeholder="ejemplo@delifast.com" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Contraseña</label>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Contraseña</label>
                         <input type="password" name="password" class="form-control" placeholder="********" required>
                     </div>
 
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-success fw-bold py-2">
+                            INGRESAR AL SISTEMA
+                        </button>
+                    </div>
+
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Aceptar</button>
+                        <a th:href="@{/menu}" class="btn btn-outline-secondary fw-bold py-2">
+                            🏠 VOLVER AL INICIO
+                        </a>
                     </div>
 
                 </form>
@@ -36,9 +49,6 @@
             </div>
         </div>
 
-        <div class="text-center mt-3">
-            <a th:href="@{/menu}" class="link-secondary">Volver al menú</a>
-        </div>
     </div>
 
     <div th:replace="~{layout/plantilla :: footer_layout}"></div>
