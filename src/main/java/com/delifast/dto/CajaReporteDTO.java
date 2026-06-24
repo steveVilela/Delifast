@@ -4,7 +4,7 @@ public class CajaReporteDTO {
     private String metodoPago;
     private long cantidadTransacciones;
     private double totalRecaudado;
-
+    //Constructor
     public CajaReporteDTO(String metodoPago, long cantidadTransacciones, double totalRecaudado) {
         this.metodoPago = metodoPago;
         this.cantidadTransacciones = cantidadTransacciones;
