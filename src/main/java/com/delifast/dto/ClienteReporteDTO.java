@@ -6,6 +6,8 @@ public class ClienteReporteDTO {
     private long totalPedidos;
     private double totalInvertido;
 
+    //constructor
+
     public ClienteReporteDTO(String dni, String nombreCompleto, long totalPedidos, double totalInvertido) {
         this.dni = dni;
         this.nombreCompleto = nombreCompleto;

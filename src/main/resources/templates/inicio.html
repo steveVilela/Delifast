@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
 </head>
+
+
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+</head>
+
+
 <body>
 
 <div th:replace="~{layout/plantilla :: nav_bar}"></div>
+
 
 <section class="home-hero" id="home">
     <div class="container" style="margin-top:70px;">
@@ -40,6 +49,76 @@
             </div>
 
         </div>
+
+<section class="home-hero">
+    <div class="container" style="margin-top:110px;">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-6">
+
+                <span class="badge bg-danger mb-3">
+                    🍔 Sabor que enamora
+                </span>
+
+                <h1 class="display-4 fw-bold mb-3">
+                    Bienvenido a <span class="brand-title">DeliFast</span>
+                </h1>
+
+                <p class="lead text-muted">
+                    Comida rápida con ingredientes frescos, atención rápida y el mejor sabor de la ciudad.
+                </p>
+
+                <a th:href="@{/menu}" class="btn btn-accent btn-lg">
+                    Ver Menú
+                </a>
+
+            </div>
+
+            <div class="col-lg-6 text-center">
+                <img th:src="@{/img/home-portada.png}" class="img-fluid home-hero__image" alt="DeliFast">
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container text-center">
+
+        <h2 class="fw-bold">¿Por qué elegirnos?</h2>
+        <p class="text-muted mb-5">Calidad, rapidez y sabor garantizado</p>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="servicio-card h-100">
+                    <div class="icon-circle"><i class="bi bi-truck"></i></div>
+                    <h3>Entrega Rápida</h3>
+                    <p>Pedidos listos en tiempo récord.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="servicio-card h-100">
+                    <div class="icon-circle"><i class="bi bi-award"></i></div>
+                    <h3>Calidad</h3>
+                    <p>Ingredientes frescos y preparados al momento.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="servicio-card h-100">
+                    <div class="icon-circle"><i class="bi bi-emoji-smile"></i></div>
+                    <h3>Satisfacción</h3>
+                    <p>Clientes felices todos los días.</p>
+                </div>
+            </div>
+
+        </div>
+
+
     </div>
 </section>
 
