@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div th:replace="~{layout/plantilla :: nav_bar}"></div>
+
+<!-- SECCIÓN ACERCA -->
+<section class="acercadenosotros-section" id="acercadenosotros">
+    <div class="container" style="margin-top: 70px;">
+
+		<h1 class="fw-bold">
+		    Sobre <span style="color:#e83e8c;">DeliFast</span>
+		</h1>
+		
+        <div class="contenido-nosotros mx-auto mb-4" style="max-width: 900px;">
+            <p>
+                En DeliFast, creemos que la comida rápida no tiene por qué ser aburrida. Nacimos con una sola misión:
+                ofrecer sabor, calidad y rapidez en cada bocado. Desde nuestras jugosas hamburguesas y papas crocantes,
+                hasta nuestros wraps, alitas y bebidas heladas, cada producto es preparado con ingredientes frescos y
+                mucho corazón. ¡Nos apasiona la cocina urbana!
+            </p>
+
+            <p>
+                El buen servicio y ver a nuestros clientes disfrutar. Ya sea que vengas con amigos, en familia o solo
+                por un antojo, estamos aquí para servirte con una sonrisa y entregarte una experiencia deliciosa,
+                rápida y accesible. ¡Porque la comida rápida también puede ser increíble!
+            </p>
+
+            <!-- VIDEO -->
+			<div class="text-center my-4">
+			    <video class="video-nosotros" autoplay loop muted playsinline>
+			        <source th:src="@{/video/SS.mp4}" type="video/mp4"l elemento de video./>
+			    </video>
+			</div>
+
+        </div>
+
+        <!-- TARJETAS -->
+        <div class="servicios-cards row g-3 justify-content-center">
+
+            <div class="col-md-4">
+                <div class="servicio-card h-100">
+                    <div class="icon-circle">
+                        <i class="bi bi-truck-front"></i>
+                    </div>
+                    <h3>Entrega Rápida</h3>
+                    <p>Recibe tu pedido en tiempo récord sin perder la calidad</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="servicio-card h-100">
+                    <div class="icon-circle">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <h3>La Mejor Comida</h3>
+                    <p>Ingredientes frescos y sabores auténticos en cada platillo</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="servicio-card h-100">
+                    <div class="icon-circle">
+                        <i class="bi bi-clock-fill"></i>
+                    </div>
+                    <h3>Horario Extendido</h3>
+                    <p>Abierto todos los días de 10:00 AM a 11:00 PM</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- FOOTER -->
+<div th:replace="~{layout/plantilla :: footer_layout}"></div>
+
+</body>
+</html>

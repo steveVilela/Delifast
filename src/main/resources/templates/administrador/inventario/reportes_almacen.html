@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+    <title>DeliFast - Reportes de Almacén</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body style="background-color:#f4f6f9;">
+
+    <nav th:replace="~{layout/plantilla :: nav_bar}"></nav>
+
+    <div class="container-fluid" style="margin-top: 120px; margin-bottom: 40px;">
+        
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-dark">📊 Panel de Analítica de Almacén</h2>
+            <p class="text-muted mb-0">Monitoreo integral logístico, auditoría transaccional de stock y control de recetas</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div style="background:#f0f7ff; padding:25px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+                    <h5 class="mb-4 fw-bold text-secondary text-center border-bottom pb-2">Reportes Disponibles</h5>
+
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold">📋 Historial de Kardex</h6>
+                            <p class="text-muted small mb-3">Auditoría de movimientos de insumos</p>
+                            <a th:href="@{/administrador/reportes/almacen(subVista='kardex')}" class="btn btn-success w-100 fw-bold">Ver Kardex</a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold">📦 Existencias de Insumos</h6>
+                            <p class="text-muted small mb-3">Stock físico y alertas críticas de almacén</p>
+                            <a th:href="@{/administrador/reportes/almacen(subVista='stockActual')}" class="btn btn-warning w-100 fw-bold text-white">Ver Stock Actual</a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold">🍳 Capacidad de Producción</h6>
+                            <p class="text-muted small mb-3">Porciones máximas calculadas por insumos</p>
+                            <a th:href="@{/administrador/reportes/almacen(subVista='disponibilidad')}" class="btn btn-primary w-100 fw-bold">Ver Disponibilidad</a>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold">📜 Fórmulas de la Carta</h6>
+                            <p class="text-muted small mb-3">Composición detallada de ingredientes</p>
+                            <a th:href="@{/administrador/reportes/almacen(subVista='recetas')}" class="btn btn-secondary w-100 fw-bold">Ver Recetas</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card border-0 p-4" style="background:#f0f7ff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                        <h4 class="mb-0 text-dark fw-bold" th:text="${tituloReporte}">📈 Reporte Seleccionado</h4>
+                        
+                        <div class="btn-group">
+                            <a th:href="@{/administrador/reportes/almacen/exportar/pdf(tipo=${subVista})}" 
+                               target="_blank" 
+                               class="btn btn-sm btn-danger fw-bold">
+                               📕 Ver PDF en Pantalla
+                            </a>
+                            <a th:href="@{/administrador/reportes/almacen/exportar/excel(tipo=${subVista})}" 
+                               class="btn btn-sm btn-success fw-bold ms-1">
+                               📗 Descargar Excel
+                            </a>
+                        </div>
+                    </div>
+
+                    <div th:if="${subVista == 'kardex'}" class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle mb-0" style="background:#f0f7ff;">
+                            <thead class="table-dark text-center">
+                                <tr>
+                                    <th>ID MOV</th>
+                                    <th>FECHA Y HORA</th>
+                                    <th>INSUMO</th>
+                                    <th>TIPO</th>
+                                    <th>CANTIDAD</th>
+                                    <th>MOTIVO / DETALLE</th>
+                                    <th>RESPONSABLE</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center fw-bold">
+                                <tr th:each="mov : ${movimientos}">
+                                    <td class="text-secondary small" th:text="${mov.movimientoId}">34</td>
+                                    <td class="small text-muted" th:text="${mov.fecha}">21/06/2026 17:44</td>
+                                    <td class="text-start text-dark" th:text="${mov.insumo != null ? mov.insumo.nombre : '---'}">Insumo</td>
+                                    <td>
+                                        <span th:class="${mov.tipoMovimiento == 'INGRESO'} ? 'badge bg-success text-white px-2 py-1' : 'badge bg-danger text-white px-2 py-1'" th:text="${mov.tipoMovimiento}">INGRESO</span>
+                                    </td>
+                                    <td th:classappend="${mov.tipoMovimiento == 'INGRESO'} ? 'text-success' : 'text-danger'"
+                                        th:text="${mov.tipoMovimiento == 'INGRESO' ? '+ ' + mov.cantidad : '- ' + mov.cantidad}">+ 25</td>
+                                    <td class="text-start text-muted small fw-normal" th:text="${mov.motivo}">Motivo</td>
+                                    <td class="text-muted small fw-normal" th:text="${mov.administrador != null ? mov.administrador.email : '---'}">admin@delifast.com</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div th:if="${subVista == 'stockActual'}" class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle mb-0" style="background:#f0f7ff;">
+                            <thead class="table-light text-center">
+                                <tr>
+                                    <th style="width: 60px;">ID</th>
+                                    <th>INSUMO / MATERIA PRIMA</th>
+                                    <th>STOCK ACTUAL</th>
+                                    <th>STOCK MÍNIMO ALERTA</th>
+                                    <th>ESTADO CRÍTICO</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center fw-bold">
+                                <tr th:each="ins : ${insumos}">
+                                    <td class="text-secondary" th:text="${ins.insumoId}">1</td>
+                                    <td class="text-start text-dark" th:text="${ins.nombre}">Coca Cola</td>
+                                    <td class="text-primary" th:text="${ins.stock} + ' ' + ${ins.unidadMedida}">45 und</td>
+                                    <td class="text-muted" th:text="${ins.stockMinimo} + ' ' + ${ins.unidadMedida}">10 und</td>
+                                    <td>
+                                        <span th:if="${ins.stock <= ins.stockMinimo}" class="badge bg-danger text-white px-3 py-2">⚠️ Abastecer Almacén</span>
+                                        <span th:if="${ins.stock > ins.stockMinimo}" class="badge bg-success text-white px-3 py-2">✅ Stock Óptimo</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div th:if="${subVista == 'disponibilidad'}">
+                        <div class="alert alert-info border-0 shadow-sm fw-bold mb-4 d-flex align-items-center" style="background: #e6f2ff; color: #004085;">
+                            <i class="fa-solid fa-circle-info fs-4 me-3 text-primary"></i>
+                            <div class="small fw-normal text-dark">
+                                <strong>Algoritmo de Explosión de Recetas:</strong> Máximo estimado de platos que la cocina puede producir hoy de acuerdo al cuello de botella de tus insumos reales.
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle mb-0" style="background:#f0f7ff;">
+                                <thead class="table-dark text-center">
+                                    <tr>
+                                        <th>PRODUCTO / PLATO COMERCIAL</th>
+                                        <th>FÓRMULA OPERATIVA DE PRODUCCIÓN (RECETA)</th>
+                                        <th>CAPACIDAD MÁXIMA PREPARABLE</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center fw-bold">
+                                    <tr th:each="sim : ${listaSimulacion}">
+                                        <td class="text-start text-dark text-uppercase fs-6" th:text="${sim.nombreProducto}">Chicha Litro</td>
+                                        <td class="text-start text-muted small fw-normal font-italic" th:text="${sim.detalleReceta}">Receta</td>
+                                        <td>
+                                            <span th:class="${sim.stockMaximoPosible > 5} ? 'badge bg-success text-white px-3 py-2 fs-6' : 'badge bg-danger text-white px-3 py-2 fs-6'"
+                                                  th:text="${sim.stockMaximoPosible} + ' porciones'">27 porciones</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div th:if="${subVista == 'recetas'}" class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle mb-0" style="background:#f0f7ff;">
+                            <thead class="table-light text-center">
+                                <tr>
+                                    <th>🍔 PLATO COMERCIAL</th>
+                                    <th>🌿 INSUMO COMPONENTE</th>
+                                    <th>⚖️ CANTIDAD NECESARIA</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center fw-bold">
+                                <tr th:each="rec : ${listaRecetas}">
+                                    <td class="text-start text-dark text-uppercase" th:text="${rec.producto != null ? rec.producto.nombre : '---'}">Plato</td>
+                                    <td class="text-start text-secondary fw-semibold" th:text="${rec.insumo != null ? rec.insumo.nombre : '---'}">Insumo</td>
+                                    <td class="text-primary" th:text="${rec.cantidadNecesaria} + ' ' + ${rec.insumo != null ? rec.insumo.unidadMedida : 'und'}">1 und</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{layout/plantilla :: footer_layout}"></div>
+</body>
+</html>

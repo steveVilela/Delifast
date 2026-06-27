@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{layout/plantilla :: nav_bar}"></div>
+
+<section class="contacto" id="contacto">
+    <div class="container-xxl py-5" style="margin-top:10px;">
+
+        <!-- TÍTULO -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold display-6" style="color: #e83e8c;">
+                Contáctanos
+            </h1>
+            <p class="text-muted mb-0">
+                Estamos listos para atenderte y brindarte el mejor sabor de DeliFast.
+            </p>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="row g-4 align-items-stretch">
+
+            <!-- MAPA + INFO -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 h-100 w-100">
+
+                    <div class="ratio ratio-16x9">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3885.0973765123613!2d-74.23249562394258!3d-13.15625736355178!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91127dee1fe4b30f%3A0xfa11e480603bd669!2sAv.%20Mariscal%20C%C3%A1ceres%201478%2C%20Ayacucho%2005003!5e0!3m2!1ses-419!2spe!4v1683407896430!5m2!1ses-419!2spe"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <div class="card-body p-3">
+                        <div class="row w-100 align-items-center gy-4">
+
+                            <div class="col-md-5 text-center">
+                                <img th:src="@{/img/home-img.png}"
+                                     class="img-fluid rounded-4 shadow-sm"
+                                     alt="Local DeliFast">
+                            </div>
+
+                            <div class="col-md-7">
+                                <h3 class="fw-bold mb-3" style="color: #e83e8c;">
+                                    DeliFast
+                                </h3>
+                                <p class="text-muted mb-3">
+                                    Comida rápida con sabor casero y calidad garantizada para que disfrutes cada pedido.
+                                </p>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">✔ Ingredientes frescos</li>
+                                    <li class="mb-2">✔ Entrega rápida</li>
+                                    <li>✔ Sabor auténtico</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORMULARIO -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 h-100 w-100">
+                    <div class="card-body p-4">
+
+                        <h3 class="fw-bold mb-4 text-center" style="color: #e83e8c;">
+                            Envíanos un mensaje
+                        </h3>
+
+                        <form id="contactoForm">
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" style="color: #e83e8c;">
+                                    Nombre completo
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-person-fill" style="color: #e83e8c;"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="nombre" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" style="color: #e83e8c;">
+                                    Correo electrónico
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-envelope-fill" style="color: #e83e8c;"></i>
+                                    </span>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" style="color: #e83e8c;">
+                                    Teléfono
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-telephone-fill" style="color: #e83e8c;"></i>
+                                    </span>
+                                    <input type="tel" class="form-control" name="telefono" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold" style="color: #e83e8c;">
+                                    Mensaje
+                                </label>
+                                <textarea class="form-control" rows="4" name="mensaje" required></textarea>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn text-white btn-lg" style="background-color: #e83e8c;">
+                                    Enviar mensaje
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CARDS INFERIORES -->
+        <div class="row g-4 mt-5">
+            <div class="col-md-6 col-lg-3">
+                <div class="card text-center h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-geo-alt-fill fs-1" style="color: #e83e8c;"></i>
+                        <h5 class="fw-bold mt-2">Dirección</h5>
+                        <p class="text-muted mb-0 small">Av. Mariscal Cáceres 1478</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card text-center h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-telephone-fill fs-1" style="color: #e83e8c;"></i>
+                        <h5 class="fw-bold mt-2">Teléfono</h5>
+                        <p class="text-muted mb-0 small">+51 981 731 695</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card text-center h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-envelope-fill fs-1" style="color: #e83e8c;"></i>
+                        <h5 class="fw-bold mt-2">Email</h5>
+                        <p class="text-muted mb-0 small">info@delifast.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card text-center h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-clock-fill fs-1" style="color: #e83e8c;"></i>
+                        <h5 class="fw-bold mt-2">Horario</h5>
+                        <p class="text-muted mb-0 small">Lun – Dom 10:00 – 23:00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div th:replace="~{layout/plantilla :: footer_layout}"></div>
+
+</body>
+</html>

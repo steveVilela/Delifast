@@ -1,0 +1,94 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="cuerpo">
+    <div class="row g-4">
+        
+        <div class="col-lg-5">
+            <div class="p-3 card border-0 shadow-sm bg-white" style="border-radius: 10px;">
+                <h5 class="mb-4 fw-bold text-danger border-bottom pb-2">
+                    📤 Registrar Salida de Insumos
+                </h5>
+
+                <form th:action="@{/administrador/inventario/registrarEgreso}" method="post">      
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">Insumo / Materia Prima</label>
+                        <select name="insumoId" class="form-select" required>
+                            <option value="" disabled selected>-- Seleccione un insumo --</option>
+                            <th:block th:if="${insumos != null}">
+                                <option th:each="ins : ${insumos}" 
+                                        th:value="${ins.insumoId}" 
+                                        th:text="${ins.nombre}">
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">Cantidad Saliente</label>
+                        <input type="number" name="cantidad" class="form-control" min="1" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">Motivo del Egreso</label>
+                        <select name="motivo" class="form-select" required>
+                            <option value="" disabled selected>-- Seleccione el motivo --</option>
+                            <option value="Insumo Vencido">Insumos Vencidos / Caducados</option>
+                            <option value="Producto Dañado">Daños o Rotura de Empaque</option>
+                            <option value="Error de Preparacion">Plato Rechazado / Error de Cocina</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-danger fw-bold py-2 shadow-sm">
+                            PROCESAR SALIDA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="p-3 card border-0 shadow-sm bg-white" style="border-radius: 10px;">
+                <h5 class="mb-3 fw-bold text-secondary border-bottom pb-2">Últimos Egresos</h5>
+				
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered table-striped align-middle mb-0 text-center">
+                        <thead class="table-dark small">
+                            <tr>
+                                <th style="width: 70px;">ID MOV</th>
+                                <th>INSUMO / MATERIA PRIMA</th>
+                                <th>CANTIDAD</th>
+                                <th>MOTIVO</th>
+                                <th>OPERARIO</th>
+                            </tr>
+                        </thead>
+                        <tbody class="small">
+                            <th:block th:if="${movimientos != null}">
+                                <tr th:each="mov : ${movimientos}" th:if="${mov.tipoMovimiento == 'SALIDA'}">
+                                    <td class="fw-bold text-secondary font-monospace" th:text="${mov.movimientoId}"></td>
+                                    
+                                    <td class="text-start fw-bold text-dark">
+                                        <span th:if="${mov.insumo != null}" th:text="${mov.insumo.nombre}"></span>
+                                        <span th:unless="${mov.insumo != null}" th:text="'Insumo ID: ' + ${mov.insumoId}"></span>
+                                    </td>
+                                    
+                                    <td>
+                                        <span class="badge" 
+                                              style="background-color: #f8d7da !important; color: #842029 !important; font-weight: bold; padding: 4px 8px;"
+                                              th:text="'- ' + ${mov.cantidad}"></span>
+                                    </td>
+                                    
+                                    <td th:text="${mov.motivo}"></td>
+                                    
+                                    <td class="small text-muted text-truncate" style="max-width: 140px;">
+                                        <span th:if="${mov.administrador != null}" th:text="${mov.administrador.email}"></span>
+                                        <span th:unless="${mov.administrador != null}">Sin asignar</span>
+                                    </td>
+                                </tr>
+                            </th:block>
+                            <tr th:if="${movimientos == null or #lists.isEmpty(movimientos)}">
+                                <td colspan="5" class="text-center text-muted py-3">No se registran movimientos de salida manuales.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> </div> </div> </div> </div> ```
+
+Reemplaza todo el contenido por este bloque. Al limpiar la estructura de etiquetas duplicadas, el árbol del DOM se acoplará perfectamente dentro de tu contenedor maestro sin desarmar los márgenes de la interfaz. ¡Listo para compilar!

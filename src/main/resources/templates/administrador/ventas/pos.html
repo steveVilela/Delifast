@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+    <style>
+        .mini-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+            cursor: pointer;
+        }
+        .ticket-container {
+            background: #1f242d;
+            color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,.15);
+        }
+    </style>
+</head>
+<body style="background-color:#f4f6f9;">
+
+    <nav th:replace="~{layout/plantilla :: nav_bar}"></nav>
+
+    <div class="container-fluid" style="margin-top: 110px; margin-bottom: 40px;">
+        <div class="row g-4">
+            
+            <div class="col-lg-7 col-xl-8">
+                <div class="card shadow-sm p-4" style="background:#f0f7ff; border-radius:10px; min-height: 75vh;">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-secondary mb-0">🍔 Catálogo de Productos (Mostrador)</h5>
+                        <span class="badge bg-success px-3 py-2">⚡ Modo Cajero Activo</span>
+                    </div>
+                    <hr>
+
+					<div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
+					    <div class="col" th:each="p : ${productos}" th:if="${p.estaActivo}">
+					        <div class="card h-100 border-0 shadow-sm text-center p-2 mini-card"
+					             th:classappend="${p.stock <= 0} ? 'pe-none bg-light' : ''"
+					             th:styleappend="${p.stock <= 0} ? 'opacity: 0.55; transform: none; box-shadow: none;' : ''"
+					             th:data-id="${p.productoId}"
+					             th:data-nombre="${p.nombre}"
+					             th:data-precio="${p.precio}"
+					             th:onclick="${p.stock <= 0} ? '' : 'agregarAlTicket(this)'">
+					            
+					            <span th:if="${p.stock <= 0}" class="badge bg-danger position-absolute top-0 start-50 translate-middle-x mt-2 small">AGOTADO</span>
+					            
+					            <img th:src="${p.imagen != null} ? @{'/uploads/productos/' + ${p.imagen}} : @{/img/no-image.png}" 
+					                 class="mx-auto mt-2" 
+					                 style="width:70px; height:70px; object-fit:cover; border-radius:8px;">
+					            
+					            <div class="card-body p-2 d-flex flex-column justify-content-between">
+					                <span class="fw-bold d-block text-dark small lh-sm mb-1" th:text="${p.nombre}"></span>
+					                <div>
+					                    <span class="text-primary fw-bold d-block mb-2" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
+					                    
+					                    <span class="d-block fw-bold text-stock" 
+					                          th:classappend="${p.stock <= 0} ? 'text-danger' : 'text-muted'"
+					                          style="font-size: 11px;" 
+					                          th:text="'Stock: ' + ${p.stock}"></span>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-5 col-xl-4">
+                <div class="p-4 ticket-container d-flex flex-column justify-content-between" style="min-height: 75vh;">
+                    
+                    <div>
+                        <h5 class="fw-bold mb-3 text-success">🧾 Ticket de Caja (POS)</h5>
+                        <hr class="bg-secondary">
+                        
+                        <div class="table-responsive" style="max-height: 320px;">
+                            <table class="table table-dark table-sm align-middle text-white" id="tablaTicket">
+                                <thead>
+                                    <tr class="text-secondary small">
+                                        <th>ITEM</th>
+                                        <th class="text-center" style="width: 80px;">CANT.</th>
+                                        <th class="text-end" style="width: 90px;">TOTAL</th>
+                                        <th class="text-center" style="width: 40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cuerpoTicket">
+                                    <tr id="filaVacia">
+                                        <td colspan="4" class="text-center text-muted py-4 small">
+                                            🛒 Haga clic en los productos de la izquierda para armar la venta.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <hr class="bg-secondary">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-bold fs-5 text-secondary">TOTAL A PAGAR:</span>
+                            <span class="fw-bold fs-4 text-success" id="totalOperacion">S/ 0.00</span>
+                        </div>
+						<div class="mb-3">
+						    <label class="form-label small text-secondary fw-bold">DNI del Cliente</label>
+						    <div class="input-group">
+						        <input type="text" class="form-control bg-dark text-white border-secondary" 
+						               id="dniCliente" placeholder="Ingrese 8 dígitos" maxlength="8">
+						        <button class="btn btn-primary fw-bold" type="button" onclick="buscarClientePorDNI()">🔍 Buscar</button>
+						    </div>
+						    <small class="text-success fw-bold d-block mt-1" id="nombreClienteConfirmado"></small>
+						    <input type="hidden" id="idClienteHidden" value="">
+						</div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label small text-secondary fw-bold">Método de Pago</label>
+                            <select class="form-select bg-dark text-white border-secondary" id="metodoPago">
+                                <option value="EFECTIVO">💵 Efectivo</option>
+                                <option value="DIGITAL">📱 Yape / Plin</option>
+                                <option value="TARJETA">💳 Tarjeta de Crédito/Débito</option>
+                            </select>
+                        </div>
+                        
+                        <button type="button" class="btn btn-success w-100 fw-bold py-2 fs-5 shadow" onclick="procesarCobro()">
+                            ⚡ EMITIR BOLETA Y COBRAR
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+	<script th:inline="javascript">
+	        let ticketProductos = [];
+
+			function agregarAlTicket(elemento) {
+			    const id = elemento.getAttribute("data-id");
+			    const nombre = elemento.getAttribute("data-nombre");
+			    const precio = parseFloat(elemento.getAttribute("data-precio"));
+			    
+			    // 🔍 Localizamos el elemento del stock de forma exacta
+			    const componenteStock = elemento.querySelector(".text-stock");
+			    if (!componenteStock) return;
+			    
+			    const stockDisponible = parseInt(componenteStock.innerText.replace("Stock: ", ""));
+
+			    const existe = ticketProductos.find(p => p.id === id);
+			    const cantidadEnTicket = existe ? existe.cantidad : 0;
+
+			    // 🔥 Candado de seguridad estricto
+			    if (stockDisponible <= 0 || cantidadEnTicket >= stockDisponible) {
+			        Swal.fire({
+			            icon: 'error',
+			            title: 'Inventario Insuficiente',
+			            text: `No puedes agregar más unidades de ${nombre}. Stock actual en tienda: ${stockDisponible}.`
+			        });
+			        return;
+			    }
+
+			    if (existe) {
+			        existe.cantidad++;
+			    } else {
+			        ticketProductos.push({ id, nombre, precio, cantidad: 1 });
+			    }
+
+			    renderizarTicket();
+			}
+
+			function modificarCantidad(id, cambio) {
+			    const producto = ticketProductos.find(p => p.id === id);
+			    if (producto) {
+			        if (cambio > 0) {
+			            const tarjetaProducto = document.querySelector(`.mini-card[data-id="${id}"]`);
+			            
+			            if (tarjetaProducto) {
+			                const textoStock = tarjetaProducto.querySelector(".text-stock").innerText;
+			                const stockDisponible = parseInt(textoStock.replace("Stock: ", ""));
+			                
+			                if (producto.cantidad >= stockDisponible) {
+			                    Swal.fire({
+			                        icon: 'error',
+			                        title: 'Stock Límite Alcanzado',
+			                        text: `No puedes agregar más unidades. El stock máximo de ${producto.nombre} es ${stockDisponible}.`
+			                    });
+			                    return; 
+			                }
+			            }
+			        }
+
+			        producto.cantidad += cambio;
+			        if (producto.cantidad <= 0) {
+			            eliminarDelTicket(id);
+			            return;
+			        }
+			    }
+			    renderizarTicket();
+			}
+
+	        function eliminarDelTicket(id) {
+	            ticketProductos = ticketProductos.filter(p => p.id !== id);
+	            renderizarTicket();
+	        }
+
+	        function renderizarTicket() {
+	            const cuerpo = document.getElementById("cuerpoTicket");
+	            cuerpo.innerHTML = "";
+	            let totalAcumulado = 0;
+
+	            if (ticketProductos.length === 0) {
+	                cuerpo.innerHTML = `
+	                    <tr id="filaVacia">
+	                        <td colspan="4" class="text-center text-muted py-4 small">
+	                            🛒 Haga clic en los productos de la izquierda para armar la venta.
+	                        </td>
+	                    </tr>`;
+	                document.getElementById("totalOperacion").innerText = "S/ 0.00";
+	                return;
+	            }
+
+	            ticketProductos.forEach(p => {
+	                const totalItem = p.precio * p.cantidad;
+	                totalAcumulado += totalItem;
+
+	                const fila = document.createElement("tr");
+	                fila.innerHTML = `
+	                    <td class="small fw-bold text-truncate" style="max-width: 150px;">${p.nombre}</td>
+	                    <td class="text-center">
+	                        <div class="btn-group btn-group-xs">
+	                            <button class="btn btn-sm btn-dark py-0 px-1 border-secondary" onclick="modificarCantidad('${p.id}', -1)">-</button>
+	                            <span class="mx-2 small fw-bold">${p.cantidad}</span>
+	                            <button class="btn btn-sm btn-dark py-0 px-1 border-secondary" onclick="modificarCantidad('${p.id}', 1)">+</button>
+	                        </div>
+	                    </td>
+	                    <td class="text-end fw-bold text-info">S/ ${totalItem.toFixed(2)}</td>
+	                    <td class="text-center">
+	                        <button class="btn btn-sm text-danger p-0" onclick="eliminarDelTicket('${p.id}')">❌</button>
+	                    </td>
+	                `;
+	                cuerpo.appendChild(fila);
+	            });
+
+	            document.getElementById("totalOperacion").innerText = "S/ " + totalAcumulado.toFixed(2);
+	        }
+
+	        function procesarCobro() {
+	            const idClienteHidden = document.getElementById("idClienteHidden");
+	            const metodoPagoElement = document.getElementById("metodoPago");
+
+	            if (!idClienteHidden || !metodoPagoElement) {
+	                Swal.fire({ 
+	                    icon: 'error', 
+	                    title: 'Error de Estructura', 
+	                    text: 'Faltan componentes en el HTML (idClienteHidden o metodoPago).' 
+	                });
+	                return;
+	            }
+
+	            const idCliente = idClienteHidden.value;
+	            const metodoPago = metodoPagoElement.value;
+
+	            if (ticketProductos.length === 0) {
+	                Swal.fire({ icon: 'warning', title: 'Ticket Vacío', text: 'Debe agregar al menos un producto para cobrar.' });
+	                return;
+	            }
+	            if (!idCliente) {
+	                Swal.fire({ icon: 'warning', title: 'Cliente Requerido', text: 'Por favor, busque un cliente por DNI o regístrelo antes de cobrar.' });
+	                return;
+	            }
+
+	            const datosVenta = {
+	                clienteId: parseInt(idCliente), 
+	                metodoPago: metodoPago,
+	                detalles: ticketProductos.map(p => ({
+	                    productoId: parseInt(p.id),
+	                    cantidad: parseInt(p.cantidad),
+	                    precioUnitario: parseFloat(p.precio)
+	                }))
+	            };
+
+	            console.log("✈️ Enviando orden de venta al backend:", datosVenta);
+
+	            fetch('/administrador/ventas/guardar', {
+	                method: 'POST',
+	                headers: {
+	                    'Content-Type': 'application/json'
+	                },
+	                body: JSON.stringify(datosVenta)
+	            })
+	            .then(response => response.json())
+	            .then(data => {
+					// 📅 Capturamos y formateamos el tiempo exacto en formato Perú
+					const fechaActualFormateada = new Date().toLocaleString('es-PE', { 
+					    day: '2-digit', 
+					    month: '2-digit', 
+					    year: 'numeric', 
+					    hour: '2-digit', 
+					    minute: '2-digit', 
+					    hour12: false 
+					});
+					
+	                if (data.status === "success") {
+	                    const clienteNombre = document.getElementById("nombreClienteConfirmado") ? document.getElementById("nombreClienteConfirmado").innerText.replace("🟢 Cliente: ", "") : "Cliente General";
+	                    const clienteDni = document.getElementById("dniCliente") ? document.getElementById("dniCliente").value : "-------";
+	                    const clienteEmail = document.getElementById("idClienteHidden").dataset.email || "No registrado";
+	                    const metodoPagoActual = document.getElementById("metodoPago").value;
+
+	                    let total = 0;
+	                    let filasTabla = "";
+	                    ticketProductos.forEach(p => {
+	                        let subtotal = p.cantidad * p.precio;
+	                        total += subtotal;
+	                        filasTabla += `
+	                            <tr>
+	                                <td style="text-align: left; padding: 5px;">${p.nombre}</td>
+	                                <td style="padding: 5px; text-align: center;">${p.cantidad}</td>
+	                                <td style="text-align: right; padding: 5px;">S/ ${parseFloat(p.precio).toFixed(2)}</td>
+	                                <td style="text-align: right; padding: 5px;">S/ ${subtotal.toFixed(2)}</td>
+	                            </tr>
+	                        `;
+	                    });
+
+	                    Swal.fire({
+	                        title: `📄 Vista Previa - Boleta #${data.pedidoId}`,
+	                        html: `
+	                            <div style="font-family: 'Courier New', monospace; font-size: 13px; text-align: left; padding: 10px; border: 1px solid #ccc; background: #fff; color: #000; border-radius: 5px;">
+	                                <h4 style="text-align: center; margin: 0 0 5px 0;">DELIFAST POS</h4>
+	                                <p style="text-align: center; margin: 0 0 10px 0; font-size: 11px;">¡El Buen Sabor en Tiempo Récord!</p>
+	                                <hr style="border-top: 1px dashed #000; margin: 5px 0;">
+	                                <p style="margin: 3px 0;"><b>DNI:</b> ${clienteDni}</p>
+	                                <p style="margin: 3px 0;"><b>Cliente:</b> ${clienteNombre}</p>
+	                                <p style="margin: 3px 0;"><b>Correo:</b> <span>${clienteEmail}</span></p>
+	                                <p style="margin: 3px 0;"><b>Pago:</b> ${metodoPagoActual.toUpperCase()}</p>
+									<p style="margin: 3px 0;"><b>Fecha:</b> ${fechaActualFormateada}</p>
+	                                <hr style="border-top: 1px dashed #000; margin: 5px 0;">
+	                                <table style="width: 100%; border-collapse: collapse; font-size: 12px; color: #000;">
+	                                    <thead>
+	                                        <tr style="border-bottom: 1px solid #000;">
+	                                            <th style="text-align: left; padding: 3px 0;">Prod</th>
+	                                            <th style="padding: 3px 0;">Cant</th>
+	                                            <th style="text-align: right; padding: 3px 0;">P.U.</th>
+	                                            <th style="text-align: right; padding: 3px 0;">Sub</th>
+	                                        </tr>
+	                                    </thead>
+	                                    <tbody>
+	                                        ${filasTabla}
+	                                    </tbody>
+	                                </table>
+	                                <hr style="border-top: 1px dashed #000; margin: 8px 0;">
+	                                <h3 style="text-align: right; margin: 0; font-size: 15px;">TOTAL: S/ ${total.toFixed(2)}</h3>
+	                            </div>
+	                        `,
+	                        width: '400px',
+	                        showDenyButton: true,
+	                        showCancelButton: true,
+	                        confirmButtonColor: '#28a745',
+	                        denyButtonColor: '#17a2b8',
+	                        cancelButtonColor: '#6c757d',
+	                        confirmButtonText: '🖨️ Imprimir',
+	                        denyButtonText: '✉️ Enviar Correo',
+	                        cancelButtonText: '❌ Salir',
+	                        allowOutsideClick: false
+	                    }).then((result) => {
+	                        if (result.isConfirmed) {
+								// 🔥 Se pasa la variable con la fecha formateada para la ventana de impresión
+	                            ejecutarImpresionDirecta(data.pedidoId, clienteNombre, clienteDni, metodoPagoActual, filasTabla, total, fechaActualFormateada);
+	                        } else if (result.isDenied) {
+	                            solicitarEnvioCorreo(data.pedidoId, clienteEmail);
+	                        } else {
+	                            window.location.reload();
+	                        }
+	                    });
+	                } else {
+	                    Swal.fire('Error', data.message, 'error');
+	                }
+	            })
+	            .catch(error => {
+	                console.error("Error:", error);
+	                Swal.fire('Error', 'No se pudo procesar la venta.', 'error');
+	            });
+	        } 
+
+	        let bootstrapModalCliente;
+
+	        document.addEventListener("DOMContentLoaded", function() {
+	            bootstrapModalCliente = new bootstrap.Modal(document.getElementById('modalNuevoCliente'));
+	        });
+
+	        function buscarClientePorDNI() {
+	            const dni = document.getElementById("dniCliente").value.trim();
+	            if (dni.length !== 8 || isNaN(dni)) {
+	                Swal.fire({ icon: 'warning', title: 'DNI Inválido', text: 'El DNI debe contener exactamente 8 dígitos numéricos.' });
+	                return;
+	            }
+
+	            fetch(`/administrador/ventas/buscar-cliente?dni=${dni}`)
+	            .then(response => response.json())
+	            .then(data => {
+	                if (data.status === "found") {
+	                    document.getElementById("nombreClienteConfirmado").innerText = `🟢 Cliente: ${data.nombre}`;
+	                    const inputHidden = document.getElementById("idClienteHidden");
+	                    inputHidden.value = data.id; 
+	                    inputHidden.dataset.email = data.email ? data.email : "No registrado"; 
+
+	                    Swal.fire({ icon: 'success', title: '¡Cliente Encontrado!', text: data.nombre, timer: 1500, showConfirmButton: false });
+	                } else {
+	                    document.getElementById("modalDni").value = dni;
+	                    document.getElementById("modalNombre").value = "";
+	                    document.getElementById("modalTelefono").value = "";
+	                    document.getElementById("modalDireccion").value = "";
+	                    
+	                    if (document.getElementById("modalEmail")) {
+	                        document.getElementById("modalEmail").value = "";
+	                    }
+	                    
+	                    bootstrapModalCliente.show();
+	                }
+	            });
+	        }
+
+	        function guardarClienteExpress() {
+	            const dni = document.getElementById("modalDni").value;
+	            const nombre = document.getElementById("modalNombre").value.trim();
+	            const telefono = document.getElementById("modalTelefono").value.trim();
+	            const direccion = document.getElementById("modalDireccion").value.trim();
+	            const email = document.getElementById("modalEmail").value.trim();
+
+	            if (nombre === "") {
+	                Swal.fire({ icon: 'warning', title: 'Campo requerido', text: 'Por favor, ingrese el nombre completo.' });
+	                return;
+	            }
+
+	            const nuevoCliente = { 
+	                dni: dni, 
+	                nombreCompleto: nombre, 
+	                telefono: telefono, 
+	                direccion: direccion,
+	                email: email 
+	            };
+
+	            fetch('/administrador/ventas/registrar-cliente', {
+	                method: 'POST',
+	                headers: { 'Content-Type': 'application/json' },
+	                body: JSON.stringify(nuevoCliente)
+	            })
+	            .then(response => response.json())
+	            .then(data => {
+	                if (data.status === "success") {
+	                    document.getElementById("nombreClienteConfirmado").innerText = `🟢 Cliente: ${nombre}`;
+	                    
+	                    const inputHidden = document.getElementById("idClienteHidden");
+	                    inputHidden.value = data.id; 
+	                    inputHidden.dataset.email = email ? email : "No registrado"; 
+	                    
+	                    bootstrapModalCliente.hide(); 
+	                    Swal.fire({ icon: 'success', title: '¡Registrado!', text: 'Cliente incorporado con éxito.', timer: 1500, showConfirmButton: false });
+	                } else {
+	                    Swal.fire('Error', data.message, 'error');
+	                }
+	            });
+	        }
+
+			function ejecutarImpresionDirecta(pedidoId, cliente, dni, pago, filas, total, fecha) {
+			    const ventana = window.open('', '_blank', 'width=350,height=500');
+			    ventana.document.write(`
+			        <html>
+			        <head>
+			            <title>Ticket #${pedidoId}</title>
+			            <style>
+			                body { font-family: 'Courier New', monospace; font-size: 12px; width: 260px; padding: 5px; color: #000; }
+			                .text-center { text-align: center; }
+			                table { width: 100%; border-collapse: collapse; font-size: 11px; }
+			                .linea { border-bottom: 1px dashed #000; margin: 5px 0; }
+			            </style>
+			        </head>
+			        <body>
+			            <h3 class="text-center" style="margin:0;">DELIFAST</h3>
+			            <p class="text-center" style="margin:0;">Ticket de Venta #${pedidoId}</p>
+			            <div class="linea"></div>
+			            <p style="margin:3px 0;"><b>Cliente:</b> ${cliente}</p>
+			            <p style="margin:3px 0;"><b>DNI:</b> ${dni}</p>
+			            <p style="margin:3px 0;"><b>Pago:</b> ${pago}</p>
+			            <p style="margin:3px 0;"><b>Fecha:</b> ${fecha}</p>
+			            <div class="linea"></div>
+			            <table style="width:100%;">${filas}</table>
+			            <div class="linea"></div>
+			            <p style="text-align: right; margin:5px 0;"><b>TOTAL: S/ ${total.toFixed(2)}</b></p>
+			            
+			            <script>
+			                window.onload = function() { 
+			                    window.print(); 
+			                    window.close(); 
+			                    window.opener.location.reload(); 
+			                }
+			            <\/script> 
+			        </body>
+			        </html>
+			    `);
+			    ventana.document.close();
+			}
+
+	        function solicitarEnvioCorreo(pedidoId, emailActual) {
+	            Swal.fire({
+	                title: 'Enviar Comprobante',
+	                input: 'email',
+	                inputLabel: 'Confirme el correo electrónico del cliente:',
+	                inputValue: emailActual === "No registrado" ? "" : emailActual,
+	                inputPlaceholder: 'ejemplo@correo.com',
+	                showCancelButton: true,
+	                confirmButtonText: '🚀 Enviar',
+	                cancelButtonText: 'Cancelar'
+	            }).then((res) => {
+	                if (res.isConfirmed && res.value) {
+	                    Swal.fire('¡Enviado!', `La boleta del pedido #${pedidoId} fue despachada a: ${res.value}`, 'success')
+	                    .then(() => window.location.reload());
+	                } else {
+	                    window.location.reload();
+	                }
+	            });
+	        }        
+	    </script>
+		
+    <footer th:replace="~{layout/plantilla :: footer_layout}"></footer>
+	
+	<div class="modal fade" id="modalNuevoCliente" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+	    <div class="modal-dialog modal-dialog-centered">
+	        <div class="modal-content text-white" style="background: #1f242d; border-radius: 10px;">
+	            <div class="modal-header border-secondary">
+	                <h5 class="modal-title text-success fw-bold">👤 Registrar Cliente Nuevo</h5>
+	                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+	            </div>
+	            <div class="modal-body">
+	                <form id="formModalCliente">
+	                    <div class="mb-3">
+	                        <label class="form-label small text-secondary fw-bold">DNI</label>
+	                        <input type="text" class="form-control bg-dark text-white border-secondary" id="modalDni" readonly>
+	                    </div>
+	                    <div class="mb-3">
+	                        <label class="form-label small text-secondary fw-bold">Nombre Completo</label>
+	                        <input type="text" class="form-control bg-dark text-white border-secondary" id="modalNombre" placeholder="Ej. Juan Carlos Pérez" required>
+	                    </div>
+	                    <div class="mb-3">
+	                        <label class="form-label small text-secondary fw-bold">Teléfono / Celular</label>
+	                        <input type="text" class="form-control bg-dark text-white border-secondary" id="modalTelefono" placeholder="999999999">
+	                    </div>
+						<div class="mb-3">
+						    <label for="modalEmail" class="form-label">Correo Electrónico</label>
+						    <input type="email" class="form-control bg-dark text-white border-secondary" id="modalEmail" placeholder="ejemplo@correo.com">
+						</div>
+	                    <div class="mb-3">
+	                        <label class="form-label small text-secondary fw-bold">Dirección (Opcional)</label>
+	                        <input type="text" class="form-control bg-dark text-white border-secondary" id="modalDireccion" placeholder="Av. Siempre Viva 123">
+	                    </div>
+	                </form>
+	            </div>
+	            <div class="modal-footer border-secondary">
+	                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+	                <button type="button" class="btn btn-success btn-sm fw-bold" onclick="guardarClienteExpress()">💾 Guardar Cliente</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+</body>
+</html>

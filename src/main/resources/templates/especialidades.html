@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+</head>
+
+<body>
+
+<div th:replace="~{layout/plantilla :: nav_bar}"></div>
+
+<section class="py-5">
+    <div class="container" style="margin-top:70px;">
+
+        <h1 class="text-center mb-5">
+            Nuestras <span style="color:#e83e8c;">Especialidades</span>
+        </h1>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden d-flex flex-column">
+                    <div class="position-relative">
+                        <span class="badge rounded-pill text-white position-absolute top-0 end-0 m-3 px-3 py-2" style="background-color: #e83e8c;">
+                            Desde S/ 10.00
+                        </span>
+                        <img th:src="@{/img/pollobroster.jpg}" class="card-img-top" alt="Platos Principales" style="object-fit: cover; height: 220px;">
+                    </div>
+                    <div class="card-body d-flex gap-2 align-items-start flex-grow-1">
+                        <img th:src="@{/img/minihamburguesa.png}" width="40" height="40" alt="Icono Platos" style="object-fit: contain;">
+                        <div>
+                            <h5 class="mb-1">Platos Principales</h5>
+                            <p class="text-muted mb-0 small">Una gran variedad de comida rápida para complacer tus ganas de comer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden d-flex flex-column">
+                    <div class="position-relative">
+                        <span class="badge rounded-pill text-white position-absolute top-0 end-0 m-3 px-3 py-2" style="background-color: #e83e8c;">
+                            Desde S/ 3.00
+                        </span>
+                        <img th:src="@{/img/postre.jpg}" class="card-img-top" alt="Postres" style="object-fit: cover; height: 220px;">
+                    </div>
+                    <div class="card-body d-flex gap-2 align-items-start flex-grow-1">
+                        <img th:src="@{/img/postreminid-removebg-preview.png}" width="40" height="40" alt="Icono Postres" style="object-fit: contain;">
+                        <div>
+                            <h5 class="mb-1">Postres</h5>
+                            <p class="text-muted mb-0">Una comida no está completa sin un buen postre</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden d-flex flex-column">
+                    <div class="position-relative">
+                        <span class="badge rounded-pill text-white position-absolute top-0 end-0 m-3 px-3 py-2" style="background-color: #e83e8c;">
+                            Desde S/ 2.50
+                        </span>
+                        <img th:src="@{/img/milshake.jpg}" class="card-img-top" alt="Bebidas" style="object-fit: cover; height: 220px;">
+                    </div>
+                    <div class="card-body d-flex gap-2 align-items-start flex-grow-1">
+                        <img th:src="@{/img/minidrinks.png}" width="40" height="40" alt="Icono Bebidas" style="object-fit: contain;">
+                        <div>
+                            <h5 class="mb-1">Bebidas</h5>
+                            <p class="text-muted mb-0">Bebidas calientes y frías a preferencia del cliente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+
+        <h1 class="text-center mb-5">
+            Nuestros platos más <span style="color:#e83e8c;">populares</span>
+        </h1>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden d-flex flex-column">
+                    <div class="position-relative">
+                        <span class="badge rounded-pill text-white position-absolute top-0 end-0 m-3 px-3 py-2" style="background-color: #e83e8c;">
+                            S/ 10.00
+                        </span>
+                        <img th:src="@{/img/p-1.jpg}" class="card-img-top" alt="Hamburguesa doble" style="object-fit: cover; height: 200px;">
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between flex-grow-1">
+                        <div style="min-height: 45px;">
+                            <h6 class="fw-bold mb-2">Hamburguesa doble</h6>
+                        </div>
+                        <a th:href="@{/menu}" class="btn w-100 text-white fw-semibold rounded-pill" style="background-color: #e83e8c;">Ordenar ahora</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden d-flex flex-column">
+                    <div class="position-relative">
+                        <span class="badge rounded-pill text-white position-absolute top-0 end-0 m-3 px-3 py-2" style="background-color: #e83e8c;">
+                            S/ 10.00
+                        </span>
+                        <img th:src="@{/img/milshake2.jpg}" class="card-img-top" alt="Milkshake" style="object-fit: cover; height: 200px;">
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between flex-grow-1">
+                        <div style="min-height: 45px;">
+                            <h6 class="fw-bold mb-2">Milkshake</h6>
+                        </div>
+                        <a th:href="@{/menu}" class="btn w-100 text-white fw-semibold rounded-pill" style="background-color: #e83e8c;">Ordenar ahora</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden d-flex flex-column">
+                    <div class="position-relative">
+                        <span class="badge rounded-pill text-white position-absolute top-0 end-0 m-3 px-3 py-2" style="background-color: #e83e8c;">
+                            S/ 20.00
+                        </span>
+                        <img th:src="@{/img/calientitopisco.jpg}" class="card-img-top" alt="Calientito de Pisco" style="object-fit: cover; height: 200px;">
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between flex-grow-1">
+                        <div style="min-height: 45px;">
+                            <h6 class="fw-bold mb-2">Calientito de Pisco</h6>
+                        </div>
+                        <a th:href="@{/menu}" class="btn w-100 text-white fw-semibold rounded-pill" style="background-color: #e83e8c;">Ordenar ahora</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<div th:replace="~{layout/plantilla :: footer_layout}"></div>
+
+</body>
+</html>

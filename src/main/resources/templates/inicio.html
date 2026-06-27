@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+</head>
+<body>
+
+<div th:replace="~{layout/plantilla :: nav_bar}"></div>
+
+<section class="home-hero" id="home">
+    <div class="container" style="margin-top:70px;">
+        <div class="row align-items-center g-4">
+
+            <div class="col-lg-6">
+				<h1 class="fw-bold">
+				    Bienvenido a <span style="color:#e83e8c;">DeliFast</span>
+				</h1>
+				
+
+                <p>
+                    DeliFast se presenta como un restaurante de comida rápida que ofrece una experiencia única.
+                </p>
+
+                <p>
+                    Podrás explorar nuestro menú y realizar pedidos fácilmente.
+                </p>
+
+                <p>
+                    ¡Sabor, calidad y rapidez en cada bocado!
+                </p>
+
+				<button type="button" class="btn btn-accent px-4 py-2"
+				        th:onclick="'window.location.href=\'' + @{/menu} + '\''">
+				    VER MENÚ
+				</button>
+            </div>
+
+            <div class="col-lg-6 text-center">
+                <img th:src="@{/img/logo1.jpeg}">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{layout/plantilla :: footer_layout}"></div>
+
+</body>
+</html>

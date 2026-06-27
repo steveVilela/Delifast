@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Cabecera Oficial de tu Proyecto -->
+    <th:block th:replace="~{layout/plantilla :: header_head}"></th:block>
+    <title>DeliFast - Reportes de Ventas</title>
+    <!-- Íconos de FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body style="background-color:#f4f6f9;">
+
+    <!-- Barra de Navegación Oficial -->
+    <nav th:replace="~{layout/plantilla :: nav_bar}"></nav>
+
+    <div class="container-fluid" style="margin-top: 120px; margin-bottom: 40px;">
+        
+        <!-- Título del Panel Principal -->
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-dark">📊 Panel de Analítica Comercial</h2>
+            <p class="text-muted mb-0">Monitoreo de ingresos, rotación de la carta y fidelidad de clientes</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- 📁 MENÚ LATERAL IZQUIERDO: SELECCIÓN DE REPORTES COMERCIALES -->
+            <div class="col-lg-4">
+                <div style="background:#f0f7ff; padding:25px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+                    <h5 class="mb-4 fw-bold text-secondary text-center border-bottom pb-2">Reportes Disponibles</h5>
+
+                    <!-- Tarjeta 1: Platos Top -->
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold">🍔 Rotación de Carta</h6>
+                            <p class="text-muted small mb-3">Ranking de los platos más vendidos en el restaurante</p>
+                            <a th:href="@{/administrador/reportes/ventas(subVista='platos')}" class="btn btn-success w-100 fw-bold">Ver Platos Top</a>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Clientes Top -->
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold">👥 Fidelidad de Clientes</h6>
+                            <p class="text-muted small mb-3">Clientes frecuentes y recurrentes en el sistema</p>
+                            <a th:href="@{/administrador/reportes/ventas(subVista='clientes')}" class="btn btn-warning w-100 fw-bold text-white">Ver Clientes Top</a>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3: Arqueo e Ingresos -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold">💰 Arqueo e Ingresos</h6>
+                            <p class="text-muted small mb-3">Historial financiero clasificado por métodos de pago</p>
+                            <a th:href="@{/administrador/reportes/ventas(subVista='ingresos')}" class="btn btn-primary w-100 fw-bold">Ver Caja</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📊 PANEL CENTRAL DERECHO: RENDERIZADO DE TABLAS COMERCIALES -->
+            <div class="col-lg-8">
+                <div class="card border-0 p-4" style="background:#f0f7ff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+                    
+                    <!-- Encabezado de la Tabla Dinámica con Descargas -->
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                        <h4 class="mb-0 text-dark fw-bold" th:text="${tituloReporte}">📈 Reporte Seleccionado</h4>
+                        
+                        <div class="btn-group">
+                            <a th:href="@{/administrador/reportes/ventas/exportar/pdf(tipo=${subVista})}" 
+                               target="_blank" 
+                               class="btn btn-sm btn-danger fw-bold">
+                               📕 Ver PDF en Pantalla
+                            </a>
+                            <a th:href="@{/administrador/reportes/ventas/exportar/excel(tipo=${subVista})}" 
+                               class="btn btn-sm btn-success fw-bold ms-1">
+                               📗 Descargar Excel
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- TABLA 1: RANKING DE PLATOS TOP             -->
+                    <!-- ========================================== -->
+                    <div th:if="${subVista == 'platos'}" class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle mb-0" style="background:#f0f7ff;">
+                            <thead class="table-light text-center">
+                                <tr>
+                                    <th style="width: 60px;">TOP</th>
+                                    <th>PLATO / PRODUCTO</th>
+                                    <th>CANTIDAD VENDIDA</th>
+                                    <th>TOTAL RECAUDADO</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center fw-bold">
+                                <tr th:each="p, iter : ${listaPlatos}">
+                                    <td class="text-secondary" th:text="${iter.count}">1</td>
+                                    <td class="text-start text-dark" th:text="${p.nombre}">Hamburguesa Royal</td>
+                                    <td class="text-primary" th:text="${p.cantidadVendida} + ' und'">85 und</td>
+                                    <td class="text-success" th:text="'S/ ' + ${#numbers.formatDecimal(p.totalRecaudado, 1, 2)}">S/ 850.00</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(listaPlatos)}">
+                                    <td colspan="4" class="text-muted fw-normal py-4">No se registran datos de rotación de platos hoy.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- TABLA 2: FIDELIDAD DE CLIENTES TOP          -->
+                    <!-- ========================================== -->
+                    <div th:if="${subVista == 'clientes'}" class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle mb-0" style="background:#f0f7ff;">
+                            <thead class="table-light text-center">
+                                <tr>
+                                    <th>DNI</th>
+                                    <th>CLIENTE</th>
+                                    <th>N° PEDIDOS</th>
+                                    <th>TOTAL INVERTIDO</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center fw-bold">
+                                <tr th:each="c : ${listaClientes}">
+                                    <td class="font-monospace text-secondary" th:text="${c.dni}">12345678</td>
+                                    <td class="text-start text-dark" th:text="${c.nombreCompleto}">Steven Vilela</td>
+                                    <td class="text-warning" th:text="${c.totalPedidos} + ' visitas'">5 visitas</td>
+                                    <td class="text-success" th:text="'S/ ' + ${#numbers.formatDecimal(c.totalInvertido, 1, 2)}">S/ 250.00</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(listaClientes)}">
+                                    <td colspan="4" class="text-muted fw-normal py-4">No se registran clientes recurrentes en este periodo.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- TABLA 3: ARQUEO DE CAJA E INGRESOS          -->
+                    <!-- ========================================== -->
+                    <div th:if="${subVista == 'ingresos'}" class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle mb-0" style="background:#f0f7ff;">
+                            <thead class="table-dark text-center">
+                                <tr>
+                                    <th>MÉTODO DE PAGO</th>
+                                    <th>N° DE TRANSACCIONES</th>
+                                    <th>TOTAL ACUMULADO</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center fw-bold">
+                                <tr th:each="caja : ${listaCaja}">
+                                    <td class="text-start text-dark">
+                                        <span th:if="${caja.metodoPago == 'YAPE' || caja.metodoPago == 'PLIN'}" class="badge bg-info text-white px-3 py-2">
+                                            📱 <span th:text="${caja.metodoPago}">YAPE</span>
+                                        </span>
+                                        <span th:if="${caja.metodoPago == 'EFECTIVO'}" class="badge bg-success text-white px-3 py-2">💵 EFECTIVO</span>
+                                        <span th:if="${caja.metodoPago == 'TARJETA'}" class="badge bg-primary text-white px-3 py-2">💳 TARJETA</span>
+                                        <span th:if="${caja.metodoPago != 'YAPE' && caja.metodoPago != 'PLIN' && caja.metodoPago != 'EFECTIVO' && caja.metodoPago != 'TARJETA'}" class="badge bg-secondary text-white px-3 py-2" th:text="${caja.metodoPago}">OTROS</span>
+                                    </td>
+                                    <td class="text-secondary" th:text="${caja.cantidadTransacciones} + ' ventas'">0 ventas</td>
+                                    <td class="text-success" th:text="'S/ ' + ${#numbers.formatDecimal(caja.totalRecaudado, 1, 2)}">S/ 0.00</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(listaCaja)}">
+                                    <td colspan="3" class="text-muted fw-normal py-4">No hay movimientos comerciales registrados para el arqueo de hoy.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fragmento de Footer Oficial de tu Proyecto -->
+    <div th:replace="~{layout/plantilla :: footer_layout}"></div>
+</body>
+</html>

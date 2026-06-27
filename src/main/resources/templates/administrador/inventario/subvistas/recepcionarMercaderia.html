@@ -1,0 +1,89 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="cuerpo">
+    <div class="row g-4">
+        
+        <div class="col-lg-5">
+            <div class="p-3 card border-0 shadow-sm" style="background: #ffffff; border-radius: 10px;">
+                <h5 class="mb-4 fw-bold text-success border-bottom pb-2">
+                    📥 Registrar Entrada de Insumos
+                </h5>
+
+                <form th:action="@{/administrador/inventario/recepcionarMercaderia/guardar}" method="post">      
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">Insumo / Materia Prima</label>
+                        <select name="insumoId" class="form-select" required>
+                            <option value="" disabled selected>-- Seleccione un insumo --</option>
+                            <option th:each="ins : ${insumos}" 
+                                    th:value="${ins.insumoId}" 
+                                    th:text="${ins.nombre} + ' (Stock: ' + ${ins.stock} + ' ' + ${ins.unidadMedida} + ')' ">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">Cantidad Entrante</label>
+                        <input type="number" name="cantidad" class="form-control" 
+                               placeholder="Ej. 50" min="1" required>
+                        <div class="form-text small text-muted">
+                            Esta cantidad se sumará directamente al stock actual del insumo.
+                        </div>
+                    </div>
+
+					<div class="mb-3">
+					    <label class="form-label fw-bold text-secondary">Motivo del Ingreso</label>
+					    <select name="motivo" class="form-select" required>
+					        <option value="" disabled selected>-- Seleccione el motivo --</option>
+					        <option value="Compra Proveedor">Compra a Proveedor</option>
+					        <option value="Ajuste Inventario">Ajuste de Inventario</option>
+					        <option value="Otros">Otros</option>
+					    </select>
+					</div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success fw-bold py-2 shadow-sm">
+                            PROCESAR ENTRADA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="p-3 card border-0 shadow-sm" style="background: #ffffff; border-radius: 10px;">
+                <h5 class="mb-3 fw-bold text-secondary border-bottom pb-2">Últimos Ingresos Registrados</h5>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered table-striped align-middle mb-0 text-center">
+						<thead class="table-dark small">
+						    <tr>
+						        <th style="width: 70px;">ID MOV</th>
+						        <th>INSUMO / MATERIA PRIMA</th>
+						        <th>CANTIDAD</th>
+						        <th>MOTIVO</th>
+						        <th>OPERARIO</th>
+						    </tr>
+						</thead>
+						<tbody class="small">
+						    <tr th:each="mov : ${movimientos}" th:if="${mov.tipoMovimiento == 'INGRESO'}">
+						        <td class="fw-bold text-secondary font-monospace" th:text="${mov.movimientoId}"></td>
+						        
+						        <td class="text-start fw-bold text-dark" th:text="${mov.insumo != null ? mov.insumo.nombre : 'Insumo #' + mov.insumoId}"></td>
+						        
+						        <td>
+						            <span class="badge bg-success text-dark fw-bold px-2 py-1" 
+						                  style="background-color: #d1e7dd !important; color: #0f5132 !important;"
+						                  th:text="'+ ' + ${mov.cantidad}"></span>
+						        </td>
+						        <td th:text="${mov.motivo}"></td>
+						        <td th:text="${mov.administrador != null ? mov.administrador.email : 'Sin asignar'}" class="small text-muted text-truncate" style="max-width: 140px;"></td>
+						    </tr>
+						    <tr th:if="${#lists.isEmpty(movimientos)}">
+                                <td colspan="5" class="text-center text-muted py-3">No se registran movimientos de entrada.</td>
+                            </tr>
+						</tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

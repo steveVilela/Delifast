@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/plantilla :: header_head}"></head>
+
+<body style="background-color:#f4f6f9;">
+    <nav th:replace="~{layout/plantilla :: nav_bar}"></nav>
+    
+    <div class="container-fluid" style="margin-top: 120px; margin-bottom: 40px;">
+        <div class="row g-4">
+
+			<div class="col-lg-4">
+			                <form th:action="@{/administrador/usuarios/guardar}" th:object="${usuario}" 
+			                      method="post"
+			                      style="background:#f0f7ff; padding:25px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+
+			                    <input type="hidden" th:field="*{adminId}">
+
+								<div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+								    <h4 class="m-0 text-success fw-bold"
+								        th:text="${usuario.adminId == 0 ? '➕ Nuevo Usuario' : '✏️ Editar Usuario'}">
+								    </h4>
+								    
+								    <a th:href="@{/administrador/usuarios}" 
+								       class="btn btn-sm btn-outline-success fw-bold shadow-sm"
+								       th:if="${usuario.adminId != 0}"
+								       title="Limpiar campos para crear un nuevo usuario">
+								       <i class="bi bi-plus-circle"></i> NUEVO
+								    </a>
+								</div>
+
+								<div class="mb-3">
+								    <label class="form-label fw-bold text-secondary">Correo Electrónico</label>
+								    <input type="email" th:field="*{email}" class="form-control" 
+								           placeholder="ejemplo@delifast.com" required maxlength="150"
+								           autocomplete="off"> </div>
+
+								<div class="mb-3">
+								    <label class="form-label fw-bold text-secondary">Contraseña</label>
+								    <input type="password" th:field="*{password}" class="form-control" 
+								           placeholder="Contraseña de acceso" required
+								           autocomplete="new-password"> </div>
+								
+								<div class="mb-3">
+								    <label class="form-label fw-bold text-secondary">Rol asignado al personal</label>
+								    <select class="form-select text-dark" th:field="*{rol}" required>
+								        <option value="" disabled selected>-- Seleccione un Rol --</option>
+								        <option th:value="'ADMIN'">👑 Administrador General</option>
+								        <option th:value="'ALMACEN'">📦 Almacenero / Logística</option>
+								        <option th:value="'VENTAS'">💰 Vendedor / Cajero (POS)</option>
+								    </select>
+								</div>
+
+			                    <div class="mb-4" th:if="${usuario.adminId != 0}">
+			                        <label class="form-label fw-bold text-secondary">Estado del Acceso</label>
+			                        <select class="form-select" th:field="*{activo}">
+			                            <option th:value="1">🟢 Activo / Permitido</option>
+			                            <option th:value="0">🔴 Inactivo / Bloqueado</option>
+			                        </select>
+			                    </div>
+			                    <div th:if="${usuario.adminId == 0}">
+			                        <input type="hidden" th:field="*{activo}" th:value="1">
+			                    </div>
+
+			                    <div class="d-grid gap-2">
+			                        <button type="submit" class="btn btn-success fw-bold">
+			                            GUARDAR
+			                        </button>
+			                        <a th:if="${usuario.adminId != 0}" th:href="@{/administrador/usuarios}" class="btn btn-outline-secondary">
+			                            Cancelar
+			                        </a>
+			                    </div>
+			                </form>
+			            </div>
+            <div class="col-lg-8">
+                <div class="card shadow-sm p-3"
+                     style="background:#f0f7ff; padding:25px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.08)">
+
+                    <h5 class="mb-3 fw-bold text-secondary">👤 Personal y Usuarios del Sistema</h5>
+
+                    <table class="table table-bordered table-striped align-middle mb-0"
+                           style="background:#f0f7ff;">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th style="width: 70px;">ID</th>
+                                <th>EMAIL / USUARIO</th>
+								<th style="width: 140px;">ROL</th>
+                                <th style="width: 140px;">ESTADO</th>
+                                <th style="width: 120px;">ACCIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${usuarios}">
+                                <td class="text-center fw-bold text-primary" th:text="${u.adminId}"></td>
+                                <td th:text="${u.email}"></td>
+								<td class="text-center">
+								    <span th:if="${u.rol == 'ADMIN'}" class="badge bg-dark">👑 Administrador</span>
+								    <span th:if="${u.rol == 'ALMACEN'}" class="badge bg-secondary">📦 Almacenero</span>
+								    <span th:if="${u.rol == 'VENTAS'}" class="badge bg-info text-dark">💰 Vendedor</span>
+								</td>
+                                <td class="text-center">
+                                    <span th:if="${u.activo == 1}" class="badge bg-success px-3 py-2">🟢 Activo</span>
+                                    <span th:if="${u.activo == 0 || u.activo == null}" class="badge bg-danger px-3 py-2">🔴 Bloqueado</span>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/administrador/usuarios/editar/{id}(id=${u.adminId})}"
+                                       class="btn btn-sm btn-outline-primary">✏️</a>
+                                    
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            th:onclick="'eliminarUsuario(' + ${u.adminId} + ')'">🗑️</button>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(usuarios)}">
+                                <td colspan="4" class="text-center text-muted py-4">No hay personal administrativo registrado.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function eliminarUsuario(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡El usuario perderá acceso inmediato al sistema!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/administrador/usuarios/eliminar/' + id;
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const msj = '[[${msj}]]';
+            
+            if (msj === "create") {
+                Swal.fire({ icon: 'success', title: '¡Creado!', text: 'Usuario registrado con éxito.' });
+            } else if (msj === "update") {
+                Swal.fire({ icon: 'success', title: '¡Actualizado!', text: 'Usuario modificado con éxito.' });
+            } else if (msj === "delete") {
+                Swal.fire({ icon: 'success', title: '¡Eliminado!', text: 'El acceso ha sido removido.' });
+            } else if (msj === "error_fk") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se puede eliminar',
+                    text: 'Este usuario tiene registros históricos vinculados en el sistema.',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#3085d6'
+                });
+            }
+        });
+    </script>
+    
+    <footer th:replace="~{layout/plantilla :: footer_layout}"></footer>
+</body>
+</html>
